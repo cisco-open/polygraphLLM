@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hallucination Score Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="static/variables.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #CCCCCC;
+            margin: 0;
+            padding: 0;
+        }
+
+        label,  .select-method {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 16px;
+            resize: vertical;
+            height: 150px; /* Set the height to make it bigger */
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            appearance: none; /* Remove default arrow */
+            background-image: url('data:image/svg+xml;utf8,<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%23555555" fill-rule="evenodd" clip-rule="evenodd" d="M12.95 7.05a.5.5 0 00-.707 0L10 8.293 7.757 6.05a.5.5 0 00-.707.707l2.5 2.5a.5.5 0 00.707 0l2.5-2.5a.5.5 0 000-.707z" fill-opacity="0.5"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 8px;
+
+        }
+
+        .input-container:last-child {
+            margin-bottom: 0;
+        }
+
+        .input-container label {
+            margin-bottom: 0px;
+            font-weight: normal;
+        }
+
+        .method-group {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 8px;
+            padding-bottom: 0;
+            height: 100px;
+            overflow: scroll;
+        }
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="left-links">
+                <a href="/benchmark" class="btn-benchmark-left">Benchmarks</a>
+            </div>
+            <div class="right-links">
+                <a href="/settings" class="btn-benchmark-right">Settings</a>
+            </div>
+        </div>
+    </header>
+    <h1>Hallucination Score Calculator</h1>
+    <div class="container">
+        <div id="loader"></div>
+        <form id="submitForm" action="/" method="post">
+
+            <div class="form-group">
+                <label for="question">Enter your question:</label>
+                <textarea id="question" name="question" placeholder="Type your question here..." rows="6"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="answer">Enter the answer (OPTIONAL):</label>
+                <textarea id="answer" name="answer" placeholder="Type your answer here..." rows="6"></textarea>
+            </div>
+
+            <!-- Dropdown for selecting method -->
+            <div class="select-method">Select method:</div>
+            <div class="form-group method-group">
+                <div class="input-container">
+                    <input class="method-checkbox" type="checkbox" id="all-checkbox" value="All"/>
+                    <label for="all-checkbox">All</label>
+                </div>
+                {{ available_methods|safe }}
+            </div>
+
+            <div class="form-group-center">
+                <input type="submit" id="submitButton" value="Calculate Score">
+            </div>
+        </form>
+    </div>
+
+
+<script>
+    $("#submitForm").submit(function(event) {
+        $("#loader").show();
+        $("#submitButton").prop('disabled', true);
+
+    });
+
+    $("#all-checkbox").change(function(event) {
+        $(".method-checkbox").each(function(idx, element) {
+            $(this).prop("checked", event.target.checked);
+        })
+
+    });
+
+
+</script>
+</body>
+</html>

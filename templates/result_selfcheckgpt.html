@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/variables.css">
+    <title>Hallucination Score Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #CCCCCC;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .method {
+            text-align: left;
+            font-size: 24px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .progress {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background-color: {% if score == 0 %} #28a745; {% else %} #007bff; {% endif %}
+            color: red;
+            text-align: center;
+            line-height: 30px;
+            transition: width 0.5s ease;
+        }
+
+        .score-value {
+            position: absolute;
+            right: 30px;
+            top: 0;
+            line-height: 70px;
+            font-size: 24px;
+        }
+
+        .question {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .question strong {
+            color: #333;
+        }
+
+        .response-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="left-links">
+                <a href="/" class="btn-benchmark-left">Home</a>
+            </div>
+            <div class="right-links">
+                <a href="/settings" class="btn-benchmark-right">Settings</a>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <h1>Hallucination Score: <span class="score">{{ score }}</span></h1>
+        <h1 class="method">Method: <span>{{ method }}</span></h1>
+        <div class="progress">
+            <div class="progress-bar" style="width: {{ score * 100 }}%;"></div>
+        </div>
+        <div class="question">
+            <p><strong>Input Question:</strong> {{ question }}</p>
+        </div>
+        <div class="question">
+            <p><strong>Answer:</strong> {{ answer }}</p>
+        </div>
+    </div>
+    {% for response in responses %}
+    <div class="container">
+        <h1>Sample Response: {{ loop.index }} </h1>
+        <div class="response-box">
+            <p>{{ response }}</p>
+        </div>
+        <br>
+    </div>
+    {% endfor %}
+</body>
+
+</html>

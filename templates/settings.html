@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="static/variables.css">
+    <style>
+        /* Add styles for tabs */
+        .tab {
+            display: none;
+        }
+
+        .tab.active {
+            display: block;
+        }
+        .tab.inactive {
+            display: none;
+        }
+
+        .tab-links {
+            margin-bottom: 20px;
+        }
+
+        .tab-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tab-links button {
+            background-color: #f2f2f2;
+            border: 3px;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .tab-links button.active {
+            background-color: #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="checkbox"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        .readonly-input {
+            background-color: #f2f2f2;
+        }
+        .editable-value {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="left-links">
+                <a href="/" class="btn-benchmark-left">Home</a>
+            </div>
+            <div class="right-links">
+                <a href="/settings" class="btn-benchmark-right">Settings</a>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <h2>Settings</h2>
+
+        <!-- Add tab links -->
+        <div class="tab-container">
+        {% for tab in tabs %}
+            <div class="tab-links">
+                {% if tab == "General" %}
+                    <button class="tab-link active" onclick="openTab(event, 'tab_{{ tab }}')">{{ tab }}</button>
+                {% else %}
+                    <button class="tab-link" onclick="openTab(event, 'tab_{{ tab }}')">{{ tab }}</button>
+                {% endif %}
+            </div>
+        {% endfor %}
+        </div>
+
+        <!-- Tab content -->
+        {% for tab in tabs %}
+            {% if tab == "General" %}
+                <div id="tab_{{ tab }}" class="tab active">
+            {% else %}
+                <div id="tab_{{ tab }}" class="tab inactive" >
+            {% endif %}
+                <form id="submitForm_{{ tab }}" action="/settings" method="post">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Value</th>
+                                <th>Description</th>
+                                <th>Secret</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for setting in settings %}
+                                {% if setting.tab == tab %}
+                                <tr>
+                                    <td><input type="text" name="settings_name_{{ loop.index }}" class="readonly-input" readonly value="{{ setting.name }}"></td>
+                                    <td>
+                                        {% if setting.secret %}
+                                            <input type="password" name="settings_value_{{ loop.index }}" class="editable-value" value="{{ setting.value }}">
+                                        {% else %}
+                                            <input type="text" name="settings_value_{{ loop.index }}" class="editable-value" value="{{ setting.value }}">
+                                        {% endif %}
+                                    </td>
+                                    <td><textarea name="settings_description_{{ loop.index }}" rows="3">{{ setting.description }}</textarea></td>
+                                    <td>
+                                        {% if setting.secret %}
+                                            <input type="checkbox" name="settings_secret_{{ loop.index }}" value="{{ setting.secret }}" checked></td>
+                                        {% else %}
+                                            <input type="checkbox" name="settings_secret_{{ loop.index }}" value="{{ setting.secret }}"></td>
+                                        {% endif %}
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="form-group-center">
+                        <input type="submit" id="submitButton_{{ tab }}" value="Save">
+                    </div>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Function to open tabs
+        function openTab(evt, tabName) {
+            console.log(evt);
+            console.log(tabName);
+            // Get all elements with class="tab" and hide them
+            var tabs = document.getElementsByClassName("tab");
+            console.log(tabs);
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].style.display = "none";
+            }
+
+            // Get all elements with class="tab-link" and remove the class "active"
+            var tabLinks = document.getElementsByClassName("tab-link");
+            for (var i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        document.getElementById("general").style.display = "block";
+    </script>
+</body>
+</html>

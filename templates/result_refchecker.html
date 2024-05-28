@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/variables.css">
+    <title>Hallucination Score Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #CCCCCC;
+            margin: 0;
+            padding: 0;
+        }
+        .score {
+            font-size: 18px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .method {
+            text-align: left;
+            font-size: 24px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .score-value {
+            position: absolute;
+            right: 30px;
+            top: 0;
+            line-height: 70px;
+            font-size: 24px;
+            color: #007bff;
+        }
+
+        .question {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .question strong {
+            color: #333;
+        }
+
+        .response-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            font-size: 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .score {
+            font-weight: bold;
+        }
+
+        .score-title {
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="left-links">
+                <a href="/" class="btn-benchmark-left">Home</a>
+            </div>
+            <div class="right-links">
+                <a href="/settings" class="btn-benchmark-right">Settings</a>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <h1>Hallucination Score:
+        {{ score|safe }}
+
+        </h1>
+        <h1 class="method">Method: <span>{{ method }}</span></h1>
+        <div class="question">
+            <p><strong>Input Question:</strong> {{ question }}</p>
+        </div>
+        <div class="question">
+            <p><strong>Answer:</strong> {{ answer }}</p>
+        </div>
+    </div>
+</body>
+
+</html>
