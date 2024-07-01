@@ -1,65 +1,92 @@
 [
   {
-    "name": "SERPER_API_KEY",
-    "value": "xxx",
-    "description": "Key to access google search services",
+    "section": "General",
+    "key": "OPENAI_API_KEY",
+    "name": "OpenAI API key",
+    "description": "API key to access OpenAI servers",
+    "value": "sk-xxxxx",
     "secret": true,
-    "tab": "General"
+    "type": "password"
   },
   {
-    "name": "OPENAI_API_KEY",
-    "value": "sk-xxxx",
-    "description": "Key to access openai services v2",
+    "section": "General",
+    "key": "SERPER_API_KEY",
+    "name": "Serper API key",
+    "description": "API key for SERPER",
+    "value": "4f3f4da752196d480624443fac6f8b7201c94d94",
     "secret": true,
-    "tab": "General"
+    "type": "password"
   },
   {
-    "name": "OPENAI_MODEL",
-    "value": "gpt-3.5-turbo-instruct",
-    "description": "The model to be used by openai",
+    "section": "General",
+    "key": "OPENAI_MODEL",
+    "name": "OpenAI Model",
+    "description": "Model to be used for OpenAI requests",
+    "value": "gpt-3.5-turbo",
     "secret": false,
-    "tab": "General"
+    "type": "text"
   },
   {
-    "name": "OPENAI_MAX_TOKENS",
-    "value": "400",
-    "description": "The max tokens for a response",
+    "section": "General",
+    "key": "OPENAI_MAX_TOKENS",
+    "name": "OpenAI Max Tokens",
+    "description": "Maximum number of tokens in OpenAI response",
+    "value": 600,
     "secret": false,
-    "tab": "General"
+    "type": "number"
   },
   {
-    "name": "BERT_SCORE_SAMPLING_NUMBER",
-    "value": "3",
-    "description": "How many times to ask the llm for responses",
+    "section": "General",
+    "key": "openai_temperature",
+    "name": "OpenAI Temperature",
+    "description": "Temperature for OpenAI response generation",
+    "value": 0.8,
     "secret": false,
-    "tab": "Bert score"
+    "type": "number"
   },
   {
-    "name": "GEVAL_SAMPLING_NUMBER",
-    "value": "6",
-    "description": "How many times to ask the llm for responses",
+    "section": "Bert-Score",
+    "key": "BERT_SCORE_SAMPLING_NUMBER",
+    "name": "BertScore sampling number",
+    "description": "Sampling number for BertScore",
+    "value": "2",
     "secret": false,
-    "tab": "G-eval"
+    "type": "number"
   },
   {
-    "name": "NGRAM_SAMPLING_NUMBER",
-    "value": "4",
-    "description": "How many times to ask the llm for responses",
+    "section": "N-Gram",
+    "key": "NGRAM_N",
+    "name": "N value to initialize Ngram",
+    "description": "Value of N for N-gram",
+    "value": 1,
     "secret": false,
-    "tab": "N-gram"
+    "type": "number"
   },
   {
-    "name": "NGRAM_N",
-    "value": "1",
-    "description": "n: n-gram model, n=1 is Unigram, n=2 is Bigram, etc.",
+    "section": "N-Gram",
+    "key": "NGRAM_SAMPLING_NUMBER",
+    "name": "NGram Sampling Number",
+    "description": "Sampling number for N-gram",
+    "value": 3,
     "secret": false,
-    "tab": "N-gram"
+    "type": "number"
   },
   {
-    "name": "CHAINPOLL_SAMPLING_NUMBER",
-    "value": "5",
-    "description": "How many times to ask the llm for responses",
+    "section": "ChainPoll",
+    "key": "CHAINPOLL_SAMPLING_NUMBER",
+    "name": "Chainpoll Polling Frequency",
+    "description": "Number of times to poll the LLM",
+    "value": 5,
     "secret": false,
-    "tab": "Chainpoll"
+    "type": "number"
+  },
+  {
+    "section": "G-Eval",
+    "key": "GEVAL_SAMPLING_NUMBER",
+    "name": "G-Eval Polling Frequency",
+    "description": "Number of times to poll the LLM",
+    "value": 6,
+    "secret": false,
+    "type": "number"
   }
 ]

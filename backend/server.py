@@ -2,12 +2,12 @@ import json
 import os
 from copy import deepcopy
 from datetime import datetime
-from flask import Flask, render_template, request, send_file, Response, jsonify
+from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
 
 from halludetector import calculate_score, init_config
-from halludetector.datasets import Parser, get_benchmark, benchmarks_for_UI
+from halludetector.datasets import get_benchmark
 from halludetector.benchmarks import get_benchmark, get_benchmarks_display_names
 # init before detector so it takes the configuration
 init_config(f'{os.path.dirname(os.path.realpath(__file__))}/config.json')
@@ -23,16 +23,6 @@ detector = Detector()
 app = Flask(__name__)
 CORS(app)
 
-scorer_html_mapping = {
-    'Self-Check GPT Bert Score': 'result_selfcheckgpt.html',
-    'Self-Check GPT NGram': 'result_selfcheckgpt.html',
-    'Self-Check GPT Prompt': 'result_selfcheckgpt.html',
-    'RefChecker': 'result_refchecker.html',
-    'G-Eval': 'result_refchecker.html',
-    'Chain Poll': 'result_chainpoll.html',
-
-}
-
 
 def store_results(data):
     report = deepcopy(data)
@@ -44,18 +34,6 @@ def store_results(data):
     with open(file, 'w') as writefile:
         writefile.write(json.dumps(report, indent=4))
     return file
-
-
-def available_methods():
-    result = ''
-    for key in scorer_html_mapping:
-        result += f'''
-       <div class="input-container">
-                <input class="method-checkbox" name="method" type="checkbox" id="{key}" value="{key}"/>
-                <label for="{key}">{key}</label>
-       </div>
-        '''
-    return result
 
 
 def dict_to_html(data):
@@ -168,7 +146,7 @@ def download_benchmark_data(benchmark_id):
 
 @app.route('/settings', methods=['GET', 'PUT'])
 def settings():
-    settings_manager = Settings('settings.json')
+    settings_manager = Settings('config.json')
     if request.method == 'PUT':
         payload = request.json
         try:
