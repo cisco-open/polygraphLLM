@@ -67,6 +67,7 @@ instance/
 
 # Scrapy stuff:
 .scrapy
+serper/
 
 # Sphinx documentation
 build
@@ -148,3 +149,4 @@ __pypackages__/
 **.rar
 **.zarr
 **.npy
+/results/*.json

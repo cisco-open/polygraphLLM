@@ -11,7 +11,7 @@ Use a conda environment and install the followings.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
-   cd backend
+
    pip install -e .
    pip install -r requirements.txt
 
@@ -26,18 +26,19 @@ Export envs for openai and google wrapper
    export SERPER_API_KEY=
 
 Usage
+------------
 
-As playground
+as playground
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-   cd frontend
+   cd playground
    npm i
    npm run dev
-   Go to http://localhost:3000/ and use the app.
 
------
+Go to http://localhost:3000/ and use the app.
+
 
 
 as library
