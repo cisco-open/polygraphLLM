@@ -22,7 +22,7 @@
     "key": "OPENAI_MODEL",
     "name": "OpenAI Model",
     "description": "Model to be used for OpenAI requests",
-    "value": "gpt-3.5-turbo",
+    "value": "gpt-3.5-turbo-instruct",
     "secret": false,
     "type": "text"
   },
@@ -49,7 +49,7 @@
     "key": "BERT_SCORE_SAMPLING_NUMBER",
     "name": "BertScore sampling number",
     "description": "Sampling number for BertScore",
-    "value": "2",
+    "value": 2,
     "secret": false,
     "type": "number"
   },

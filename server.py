@@ -24,51 +24,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-def store_results(data):
-    report = deepcopy(data)
-    for question in report:
-        for result in question['results']:
-            del result['score_formatted']
-
-    file = f'{os.path.dirname(os.path.realpath(__file__))}/results/benchmark_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.json'
-    with open(file, 'w') as writefile:
-        writefile.write(json.dumps(report, indent=4))
-    return file
-
-
-def dict_to_html(data):
-    html = '<table>\n'
-    for key, value in data.items():
-        html += f'''
-            <tr>
-                <td class="score-title">{key}</td>
-                <td class="score">{value}</td>
-            </tr>
-            '''
-    html += '\n</table>'
-    return html
-
-
-def calculate_score_thread(method, question, answer=None, samples=None, summary=None):
-    score, answer, responses = calculate_score(method, question, answer, samples, summary)
-    return {
-        'method': method,
-        'answer': answer,
-        'summary': summary,
-        'samples': responses,
-        'score_formatted': score if not isinstance(score, dict) else dict_to_html(score),
-        'score': score,
-    }
-
-
-def custom_sorting_key(item):
-    if item == 'General':
-        return (0, item)  # Return a tuple with 0 as the first element to ensure the specific word comes first
-    else:
-        return (1, item)  # Return a tuple with 1 as the first element for all other words
-
-
-
 @app.route('/detect', methods=['POST'])
 def detect_route():
     try:
@@ -88,6 +43,7 @@ def detect_route():
                 question = qa.get('question')
                 answer = qa.get('answer')
                 context = qa.get('context')
+                samples = qa.get('samples')
                 if isinstance(answer, list):
                     if answer:
                         answer = answer[0]
@@ -100,7 +56,7 @@ def detect_route():
                 for method in methods:
                     detector = get_detector(method)
                     if detector:
-                        score, answer, responses = detector.score(question, answer, None, context)
+                        score, answer, responses = detector.score(question, answer, samples, context)
                         hallucination_scores[method] = {'score': score, 'reasoning': responses}
                     else:
                         return {'error': f'Invalid detection method provided: {method}'}
@@ -114,10 +70,10 @@ def detect_route():
                 }
             except Exception as e:
                 logging.error(f'Error processing QA: {e}')
-                return {'error': f'An error occurred processing QA: {e}'}
+                return jsonify({'error': f'An error occurred processing QA: {e}'}), 500
 
         # Execute processing in parallel
-        with ThreadPoolExecutor() as executor:
+        with ThreadPoolExecutor(max_workers=5) as executor:
             results = list(executor.map(process_question_answer, qas))
 
         return jsonify(results)

@@ -1,4 +1,5 @@
 import json
+import os
 
 class Settings:
     def __init__(self, filename):
@@ -16,8 +17,12 @@ class Settings:
     def update_settings(self, field_key, new_value):
         for field in self.settings:
             if field['key'] == field_key:
-                field['value'] = new_value
+                if field['type'] == 'number':
+                    field['value'] = int(new_value)
+                else:
+                    field['value'] = new_value
                 return
+            os.environ[field_key] = new_value
         else:
             raise KeyError(f"Field with '{field_key}' not found")
         

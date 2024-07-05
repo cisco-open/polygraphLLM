@@ -35,7 +35,7 @@ export const BenchmarksDetection = ({ benchmarks, detectors }: Props) => {
   const INITIAL_STATE_SELECTED_METHODS = detectors.reduce((acc, { id }) => {
     acc[id] = true;
     return acc;
-  }, {});
+  }, {} as { [key: string]: boolean });
   const [dataset, setDataset] = useState<DatasetItem[]>([]);
   const [result, setResult] = useState<HallucinationDetectionResultItem[]>([]);
   const [selectedDataset, setSelectedDataset] = useState(benchmarks[0].id);
@@ -105,7 +105,7 @@ export const BenchmarksDetection = ({ benchmarks, detectors }: Props) => {
       detectors.reduce((acc, { id }) => {
         acc[id] = e.target.ariaChecked !== "true";
         return acc;
-      }, {})
+      }, {} as { [key: string]: boolean })
     );
   };
 

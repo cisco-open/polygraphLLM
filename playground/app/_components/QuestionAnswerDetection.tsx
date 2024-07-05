@@ -26,7 +26,7 @@ export const QuestionAnswerDetection = ({ detectors }: Props) => {
   const INITIAL_STATE_SELECTED_METHODS = detectors.reduce((acc, { id }) => {
     acc[id] = true;
     return acc;
-  }, {});
+  }, {} as { [key: string]: boolean });
   const [selectedMethods, setSelectedMethods] = useState<
     Record<string, boolean>
   >(INITIAL_STATE_SELECTED_METHODS);
@@ -48,7 +48,7 @@ export const QuestionAnswerDetection = ({ detectors }: Props) => {
       detectors.reduce((acc, { id }) => {
         acc[id] = e.target.ariaChecked !== "true";
         return acc;
-      }, {})
+      }, {} as { [key: string]: boolean })
     );
   };
 

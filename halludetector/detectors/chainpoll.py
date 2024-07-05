@@ -13,6 +13,7 @@ class ChainPoll(Detector):
 
     def __init__(self):
         super().__init__()
+        self.sample_number = int(os.getenv("CHAINPOLL_SAMPLING_NUMBER", 5))
         try:
             with open(f'{os.path.dirname(os.path.realpath(__file__))}/../prompts/chainpoll.txt', 'r') as pf:
                 self.prompt = pf.read()
@@ -21,7 +22,7 @@ class ChainPoll(Detector):
 
     def check_hallucinations(self, completion, question):
         text = self.prompt.format(completion=completion, question=question)
-        responses = self.ask_llm(text, n=int(os.getenv("CHAINPOLL_SAMPLING_NUMBER")), temperature=0.2)
+        responses = self.ask_llm(text, n=self.sample_number, temperature=0.2)
         logger.info(f'Hallucination check response: {responses}')
         return [response.lower().startswith("yes") for response in responses], responses
 
