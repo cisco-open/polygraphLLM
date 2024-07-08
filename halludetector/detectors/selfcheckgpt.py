@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class SelfCheckGPTBertScore(Detector):
+    id = 'self_check_gpt_bertscore'
+    display_name = 'Self-Check GPT BertScore'
 
     def __init__(self):
         super().__init__()
@@ -37,6 +39,8 @@ class SelfCheckGPTBertScore(Detector):
 
 
 class SelfCheckGPTNGram(Detector):
+    id = 'self_check_gpt_ngram'
+    display_name = 'Self-Check GPT NGram'
 
     def __init__(self):
         super().__init__()
@@ -62,6 +66,8 @@ class SelfCheckGPTNGram(Detector):
 
 
 class SelfCheckGPTPrompt(Detector):
+    id = 'self_check_gpt_prompt'
+    display_name = 'Self-Check GPT Prompt'
 
     def __init__(self):
         super().__init__()
@@ -121,7 +127,7 @@ class SelfCheckGPTPrompt(Detector):
 
 
 class SelfCheckGPTMQAG(Detector):
-
+    
     def __init__(self):
         import torch
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

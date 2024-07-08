@@ -26,16 +26,20 @@ Export envs for openai and google wrapper
    export SERPER_API_KEY=
 
 Usage
------
+------------
 
-as server
-^^^^^^^^^
+as playground
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-   python3 server.py
+   cd playground
+   npm i
+   npm run dev
 
-Go to http://127.0.0.1:5000 and use the app.
+Go to http://localhost:3000/ and use the app.
+
+
 
 as library
 ^^^^^^^^^^

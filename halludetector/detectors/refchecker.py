@@ -2,10 +2,13 @@ from .base import Detector
 
 
 class RefChecker(Detector):
+    id = 'refchecker'
+    display_name = 'RefChecker'
+
     def __init__(self):
         super().__init__()
 
-    def score(self, question=None, answer=None, samples=None):
+    def score(self, question=None, answer=None, samples=None,summary=None):
         if not question:
             question = self.generate_question(answer)
 

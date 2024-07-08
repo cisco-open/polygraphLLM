@@ -2,200 +2,120 @@ import json
 import os
 from copy import deepcopy
 from datetime import datetime
-from flask import Flask, render_template, request, send_file, Response, jsonify
+from flask import Flask, request, send_file, jsonify
+from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
 
 from halludetector import calculate_score, init_config
-from halludetector.datasets import Parser, get_benchmark, benchmarks_for_UI
+from halludetector.datasets import get_benchmark
+from halludetector.benchmarks import get_benchmark, get_benchmarks_display_names
 # init before detector so it takes the configuration
 init_config(f'{os.path.dirname(os.path.realpath(__file__))}/config.json')
 
 from halludetector.detectors.base import Detector
+from halludetector.detectors import get_detector
+from halludetector.detectors import get_detectors_display_names
+from halludetector.settings.Settings import Settings
+import logging
 
 detector = Detector()
 
 app = Flask(__name__)
-
-scorer_html_mapping = {
-    'Self-Check GPT Bert Score': 'result_selfcheckgpt.html',
-    'Self-Check GPT NGram': 'result_selfcheckgpt.html',
-    'Self-Check GPT Prompt': 'result_selfcheckgpt.html',
-    'RefChecker': 'result_refchecker.html',
-    'G-Eval': 'result_refchecker.html',
-    'Chain Poll': 'result_chainpoll.html',
-
-}
+CORS(app)
 
 
-def store_results(data):
-    report = deepcopy(data)
-    for question in report:
-        for result in question['results']:
-            del result['score_formatted']
-
-    file = f'{os.path.dirname(os.path.realpath(__file__))}/results/benchmark_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.json'
-    with open(file, 'w') as writefile:
-        writefile.write(json.dumps(report, indent=4))
-    return file
-
-
-def available_methods():
-    result = ''
-    for key in scorer_html_mapping:
-        result += f'''
-       <div class="input-container">
-                <input class="method-checkbox" name="method" type="checkbox" id="{key}" value="{key}"/>
-                <label for="{key}">{key}</label>
-       </div>
-        '''
-    return result
-
-
-def dict_to_html(data):
-    html = '<table>\n'
-    for key, value in data.items():
-        html += f'''
-            <tr>
-                <td class="score-title">{key}</td>
-                <td class="score">{value}</td>
-            </tr>
-            '''
-    html += '\n</table>'
-    return html
-
-
-def calculate_score_thread(method, question, answer=None, samples=None, summary=None):
-    score, answer, responses = calculate_score(method, question, answer, samples, summary)
-    return {
-        'method': method,
-        'answer': answer,
-        'summary': summary,
-        'samples': responses,
-        'score_formatted': score if not isinstance(score, dict) else dict_to_html(score),
-        'score': score,
-    }
-
-
-def custom_sorting_key(item):
-    if item == 'General':
-        return (0, item)  # Return a tuple with 0 as the first element to ensure the specific word comes first
-    else:
-        return (1, item)  # Return a tuple with 1 as the first element for all other words
-
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        print('requesting evaluation')
-        question = request.form['question']
-        answer = request.form['answer']
-        methods = request.form.getlist('method')
-        if len(methods) == 1:
-            score, answer, responses = calculate_score(methods[0], question, answer)
-            score = score if not isinstance(score, dict) else dict_to_html(score)
-            return render_template(scorer_html_mapping[methods[0]], question=question, score=score,
-                                   responses=responses, answer=answer, method=methods[0])
-        else:
-            with ThreadPoolExecutor(max_workers=5) as executor:
-                # Submit tasks for each method calculation
-                futures = [executor.submit(calculate_score_thread, method, question, answer) for method in
-                           methods]
-
-                # Gather results from completed threads
-                data = [future.result() for future in futures]
-
-        return render_template('dashboard.html', data=data)
-    return render_template('index.html', available_methods=available_methods())
-
-
-@app.route('/benchmark', methods=['GET', 'POST'])
-def benchmark():
-    benchmarks = benchmarks_for_UI()
-    if request.method == 'POST':
-        print('requesting info')
-        data = Parser().parse_input(request.form)
-        methods = request.form.getlist('method')
-        data_results = []
+@app.route('/detect', methods=['POST'])
+def detect_route():
+    try:
+        data = request.get_json()
+        methods = data.get('methods')
+        qas = data.get('qas')
 
         if not methods:
-            return render_template(
-                'benchmark_results.html', data=data_results, columns=[], file=None, benchmarks=benchmarks
-            )
+            return jsonify({'error': 'Detection method not provided'}), 400
 
-        for item in data:
-            question = item.get('question')
-            answer = item.get('answer')
-            samples = item.get('samples')
-            context = item.get('context')
-            summary = item.get('summary')
-            if context:
-                question += f'\nContext: {context}'
+        if not qas or not isinstance(qas, list):
+            return jsonify({'error': 'Invalid or empty question-answer pairs provided'}), 400
 
-            if not answer:
-                answer = detector.ask_llm(question)
-            elif not question:
-                if len(methods) == 1 and methods[0] == 'G-Eval':
-                    # G-Eval doesn't need a question
-                    pass
-                else:
-                    question = detector.generate_question(answer)
-            if 'Self-Check GPT Bert Score' in methods and 'Self-Check GPT NGram' in methods:
-                samples = detector.ask_llm(question, n=3, temperature=0.2)
+        def process_question_answer(qa):
+            try:
+                id = qa.get('id')
+                question = qa.get('question')
+                answer = qa.get('answer')
+                context = qa.get('context')
+                samples = qa.get('samples')
+                if isinstance(answer, list):
+                    if answer:
+                        answer = answer[0]
 
-            with ThreadPoolExecutor(max_workers=5) as executor:
-                # Submit tasks for each method calculation
-                futures = [executor.submit(calculate_score_thread, method, question, answer, samples, summary) for method in
-                           methods]
+                if not question:
+                    return {'error': 'Question not provided'}
 
-                # Gather results from completed threads
-                results = [future.result() for future in futures]
-            data_results.append({'question': question, 'results': results})
+                hallucination_scores = {}
+                
+                for method in methods:
+                    detector = get_detector(method)
+                    if detector:
+                        score, answer, responses = detector.score(question, answer, samples, context)
+                        hallucination_scores[method] = {'score': score, 'reasoning': responses}
+                    else:
+                        return {'error': f'Invalid detection method provided: {method}'}
 
-        columns = ['Question']
-        for element in data_results[0]['results']:
-            columns.append(element['method'])
+                return {
+                    'id': id,
+                    'question': question,
+                    'answer': answer,
+                    'context': context,
+                    'result': hallucination_scores
+                }
+            except Exception as e:
+                logging.error(f'Error processing QA: {e}')
+                return jsonify({'error': f'An error occurred processing QA: {e}'}), 500
 
-        file = store_results(data_results)
-        return render_template('benchmark_results.html', data=data_results, columns=columns, file=file, benchmarks=benchmarks)
-    return render_template('benchmark.html', available_methods=available_methods(), benchmarks=benchmarks)
+        # Execute processing in parallel
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            results = list(executor.map(process_question_answer, qas))
+
+        return jsonify(results)
+    except Exception as e:
+        logging.error(f'Error in detect_hallucinations_route: {e}')
+        return jsonify({'error': 'An unexpected error occurred'}), 500
+    
+@app.route('/download/<benchmark_id>', methods=['GET'])
+def download_benchmark_data(benchmark_id):
+    try:
+        offset = int(request.args.get('offset', 0))
+        limit = int(request.args.get('limit', 10))
+
+        parser = get_benchmark(benchmark_id)
+        if not parser:
+            return jsonify({'error': f'No parser found for benchmark ID: {benchmark_id}'}), 404
+
+        parser_instance = parser()
+        data = parser_instance.display(offset, limit)
+
+        return jsonify({"data": data})
+    except Exception as e:
+        logging.error(f'Error in download_benchmark_data: {e}')
+        return jsonify({'error': 'An unexpected error occurred'}), 500    
 
 
-@app.route('/settings', methods=['GET', 'POST'])
+@app.route('/settings', methods=['GET', 'PUT'])
 def settings():
-    base = 'settings'
-    new_data = []
-    with open('config.json', 'r') as searchfile:
-        data = json.loads(searchfile.read())
-    tabs = list(set([element.get('tab', 'General') for element in data]))
-    tabs = sorted(tabs, key=custom_sorting_key)
-
-    if request.method == 'POST':
-        updated_keys = []
-        tabs_by_name = {element['name']: element['tab'] for element in data}
-        for key in request.form.keys():
-            if key.startswith('settings_name_'):
-                idx = key.split('_')[-1]
-                name = request.form.get(f'{base}_name_{idx}')
-                new_data.append({
-                    "name": name,
-                    "value": request.form.get(f'{base}_value_{idx}'),
-                    "description": request.form.get(f'{base}_description_{idx}'),
-                    "secret": True if f'{base}_secret_{idx}' in request.form.keys() else False,
-                    "tab": tabs_by_name[name]
-                })
-                updated_keys.append(name)
-
-        # copy what is not updated.
-        for element in data:
-            if element['name'] not in updated_keys:
-                new_data.append(element)
-
-        with open('config.json', 'w') as writefile:
-            writefile.write(json.dumps(new_data, indent=4))
-        init_config(f'{os.path.dirname(os.path.realpath(__file__))}/config.json', force=True)
-        return render_template('settings.html', settings=new_data, tabs=tabs)
-
-    return render_template('settings.html', settings=data, tabs=tabs)
+    settings_manager = Settings('config.json')
+    if request.method == 'PUT':
+        payload = request.json
+        try:
+            for item in payload:
+                field_key = item.get('field_key')
+                new_value = item.get('new_value')
+                settings_manager.update_settings(field_key, new_value)
+                settings_manager.save_settings()
+            return jsonify({'message': 'Settings updated successfully'}), 201
+        except KeyError as e:
+            return jsonify({'error': str(e)}), 400
+    elif request.method == 'GET':
+        return jsonify({"data": settings_manager.settings})
 
 
 @app.route('/download', methods=['GET'])
@@ -212,6 +132,24 @@ def datasets():
         data = benchmark_class().display()
 
     return jsonify(data)
+
+@app.route('/ask-llm', methods=['POST'])
+def ask_llm():
+    payload = request.get_json()
+    question = payload.get('question')
+    answer = detector.ask_llm(question)
+
+    return jsonify(answer)
+
+@app.route('/detectors', methods=['GET'])
+def get_detectors_display_name():
+    detectors = get_detectors_display_names()
+    return jsonify({"data": detectors})
+
+@app.route('/benchmarks', methods=['GET'])
+def get_benchmarks_display_name():
+        benchmarks = get_benchmarks_display_names()
+        return jsonify({"data": benchmarks})
 
 
 if __name__ == '__main__':

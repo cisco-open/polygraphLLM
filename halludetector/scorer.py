@@ -8,12 +8,12 @@ from halludetector.detectors import (
 )
 
 scorer_mapping = {
-    'Self-Check GPT Bert Score': SelfCheckGPTBertScore,
-    'Self-Check GPT NGram': SelfCheckGPTNGram,
-    'Self-Check GPT Prompt': SelfCheckGPTPrompt,
-    'RefChecker': RefChecker,
-    'G-Eval': GEval,
-    'Chain Poll': ChainPoll,
+    'self_check_gpt_bertscore': SelfCheckGPTBertScore,
+    'self_check_gpt_ngram': SelfCheckGPTNGram,
+    'self_check_gpt_prompt': SelfCheckGPTPrompt,
+    'refchecker': RefChecker,
+    'g_eval': GEval,
+    'chainpoll': ChainPoll,
 }
 
 logger = logging.getLogger(__name__)

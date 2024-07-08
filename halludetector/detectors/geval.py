@@ -11,7 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class GEval(Detector):
+    id = 'g_eval'
+    display_name = 'G-Eval'
     metrics = ['coherence', 'consistency', 'fluency', 'relevance']
+    
     @staticmethod
     def parse_output(output):
         if ':' in output:
@@ -73,5 +76,5 @@ class GEval(Detector):
             all_scores = [self.parse_output(x.strip()) for x in answers]
             score = sum(all_scores) / len(all_scores)
             scores[metric.title()] = float("{:.2f}".format(self.normalize_score(score)))
-        scores['Overall'] = float("{:.2f}".format(sum([v for k, v in scores.items()])/len(scores)))
+        scores['Total'] = float("{:.2f}".format(sum([v for k, v in scores.items()])/len(scores)))
         return scores, answer, samples

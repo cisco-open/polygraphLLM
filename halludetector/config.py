@@ -25,7 +25,7 @@ def init_config(file, force=False):
         with open(file, 'r') as cfgfile:
             config = json.loads(cfgfile.read())
             for c in config:
-                key = c['name']
+                key = c['key']
                 value = c['value']
                 if force or not os.getenv(key):
                     os.environ[key] = str(value)
