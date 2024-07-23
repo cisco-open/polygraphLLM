@@ -88,5 +88,15 @@
     "value": 6,
     "secret": false,
     "type": "number"
+  },
+  {
+    "section": "LLM-Uncertainty",
+    "key": "LLM_UNCERTAINTY_PROMPT_STRATEGY",
+    "name": "LLM Uncertainty Prompt Strategy",
+    "description": "Prompting strategy for LLM Uncertainty method",
+    "value": "cot",
+    "secret": false,
+    "type": "select",
+    "values": "vanilla, cot, multi-step, self-probing"
   }
 ]

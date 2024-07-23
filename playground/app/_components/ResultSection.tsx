@@ -94,9 +94,15 @@ export const ResultSection = ({
               <DataList.Value>
                 <Flex direction="column" gap="0">
                   {result[0].result[selectedResult].reasoning.map(
-                    (item, idx) => (
-                      <Text key={idx}>{item}</Text>
-                    )
+                    (item, idx) => {
+                      if (item.includes("\n")) {
+                        return item
+                          .split("\n")
+                          .map((line, idx) => <Text key={idx}>{line}</Text>);
+                      } else {
+                        return <Text key={idx}>{item}</Text>;
+                      }
+                    }
                   )}
                 </Flex>
               </DataList.Value>
@@ -208,6 +214,17 @@ const getEvaluationLabel = (
       return "Most likely not hallucinated";
     } else if (score === 1) {
       return "Hallucinated";
+    } else {
+      return "Most likely hallucinated";
+    }
+  }
+
+  if (method === Detectors.LLM_Uncertainty && typeof score === "string") {
+    score = Number(score?.split("/")[0]);
+    if (score === 100) {
+      return "Not hallucinated";
+    } else if (score > 50) {
+      return "Most likely not hallucinated";
     } else {
       return "Most likely hallucinated";
     }

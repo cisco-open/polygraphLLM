@@ -7,6 +7,7 @@ import {
   Flex,
   Button,
   SegmentedControl,
+  Select,
   Text,
   Tooltip,
 } from "@radix-ui/themes";
@@ -43,6 +44,20 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
       updatedSettings[settingIndex] = {
         ...updatedSettings[settingIndex],
         value: e.target.value,
+      };
+      setActiveSectionData(updatedSettings);
+    }
+  };
+
+  const handleSelectChange = (value: string, key: string) => {
+    const settingIndex = activeSectionData?.findIndex(
+      (setting) => setting.key === key
+    );
+    if (settingIndex !== -1) {
+      const updatedSettings = [...activeSectionData];
+      updatedSettings[settingIndex] = {
+        ...updatedSettings[settingIndex],
+        value,
       };
       setActiveSectionData(updatedSettings);
     }
@@ -108,14 +123,33 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
                     {item.name}
                   </Text>
                 </Flex>
-                <TextField.Root
-                  id={item.key}
-                  value={item.value}
-                  placeholder={`${item.name}...`}
-                  type={item.type}
-                  onChange={(e) => handleInputChange(e, item.key)}
-                  required
-                />
+                {item.type === "select" ? (
+                  <Select.Root
+                    onValueChange={(val) => {
+                      handleSelectChange(val, item.key);
+                    }}
+                    defaultValue={item.value}
+                  >
+                    <Select.Trigger placeholder="Select type" />
+                    <Select.Content>
+                      {item.values
+                        ?.split(", ")
+                        ?.map((item) => item.replace(/,/g, ""))
+                        ?.map((item) => {
+                          return <Select.Item value={item}>{item}</Select.Item>;
+                        })}
+                    </Select.Content>
+                  </Select.Root>
+                ) : (
+                  <TextField.Root
+                    id={item.key}
+                    value={item.value}
+                    placeholder={`${item.name}...`}
+                    type={item.type}
+                    onChange={(e) => handleInputChange(e, item.key)}
+                    required
+                  />
+                )}
               </Flex>
             );
           })}

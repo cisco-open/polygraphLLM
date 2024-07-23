@@ -18,6 +18,7 @@ from .chainpoll import ChainPoll
 from .selfcheckgpt import SelfCheckGPTBertScore, SelfCheckGPTNGram, SelfCheckGPTMQAG, SelfCheckGPTPrompt
 from .refchecker import RefChecker
 from .geval import GEval
+from .llmUncertainty import LLMUncertainty
 
 DETECTORS = [
     ChainPoll, 
@@ -25,7 +26,8 @@ DETECTORS = [
     SelfCheckGPTNGram,
     SelfCheckGPTPrompt,
     RefChecker,
-    GEval
+    GEval,
+    LLMUncertainty
 ]
 
 def get_detectors_display_names():

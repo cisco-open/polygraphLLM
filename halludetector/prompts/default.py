@@ -164,3 +164,46 @@ Does this completion contain hallucinations?
 DEFAULT_SELFCHECK_WITH_PROMPT_PROMPT = '''
 "Context: {context}\n\nSentence: {sentence}\n\nIs the sentence supported by the context above? Answer Yes or No.\n\nAnswer: "
 '''
+
+DEFAULT_LLM_UNCERTAINTY_VANILLA_PROMPT = """
+Read the question and answer and provide your confidence in this answer. 
+Note: The confidence indicates how likely you think the answer is true.
+Use the following format to answer:
+Confidence: [Your confidence level, please only include the numerical number in the range of 0-100]%
+Only the confidence, don’t give me the explanation.
+Question:{question}
+Answer:{answer}
+Now, please provide your confidence level.
+"""
+
+
+DEFAULT_LLM_UNCERTAINTY_COT_PROMPT = """
+Read the question and answer, analyze step by step, and provide your confidence in this answer. 
+Note: The confidence indicates how likely you think your answer is true.
+Use the following format to answer:
+Confidence: [Your confidence level, please only include the numerical number in the range of 0-100]%
+Explanation: [step-by-step analysis]
+Only give me the reply according to this format, don’t give me any other words.
+Question:{question}
+Answer:{answer}
+Now, please provide your confidence level. Let’s think it step by step.
+"""
+
+
+DEFAULT_LLM_UNCERTAINTY_SELF_PROBING_PROMPT = """
+Question:{question}
+Possible Answer:{answer}
+Q: How likely is the above answer to be correct? Please first show your reasoning concisely and then answer with the following format:
+Confidence: [the probability of answer {answer} to be correct, not the one you think correct, please only include the numerical number in the range of 0-100%]
+Explanation: [your reasoning]
+"""
+
+DEFAULT_LLM_UNCERTAINTY_MULTI_STEP_PROMPT = """
+Read the question and answer, your task is to provide your confidence in the answer. Break down the task into K steps, think step by step, give your confidence in each step in the range of 0-100%, and then derive your final confidence in this answer. 
+Note: The confidence indicates how likely you think your answer is true.
+Use the following format to answer:
+“‘Step 1: [Your reasoning], Confidence: [ONLY the confidence value that this step is correct]%
+...
+Step K: [Your reasoning], Confidence: [ONLY the confidence value that this step is correct]%
+Overall Confidence: [Your final confidence value]%”’
+"""
