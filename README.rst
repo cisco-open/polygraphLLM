@@ -298,7 +298,7 @@ https://github.com/amazon-science/RefChecker
 
 https://arxiv.org/abs/2310.18344
 
+**Can LLMs express their uncertainty? An empirical evaluation of confidence elicitation in LLMs**
 
-
-
+https://openreview.net/pdf?id=gjeQKFxFpZ
 

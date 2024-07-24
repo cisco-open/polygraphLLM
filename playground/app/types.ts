@@ -28,10 +28,11 @@ export interface HallucinationDetectionResultItem {
 export interface SettingsItem {
   section: string;
   key: string;
-  type: "text" | "number" | "password";
+  type: "text" | "number" | "password" | "select";
   name: string;
   value: string;
   description: string;
+  values?: string;
 }
 
 export interface UpdateSettingsPayload {
@@ -57,4 +58,5 @@ export enum Detectors {
   SelfCheck_NGram = "self_check_gpt_ngram",
   SelfCheck_BertScore = "self_check_gpt_bertscore",
   SelfCheck_Prompt = "self_check_gpt_prompt",
+  LLM_Uncertainty = "llm_uncertainty",
 }

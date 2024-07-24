@@ -10,8 +10,8 @@ import { API_BASE_URL } from "./constants";
 export default async function Home() {
   const [detectorsResponse, benchmarksResponse, settingsResponse] =
     await Promise.all([
-      fetch(`${API_BASE_URL}/detectors`),
-      fetch(`${API_BASE_URL}/benchmarks`),
+      fetch(`${API_BASE_URL}/detectors`, { cache: "no-store" }),
+      fetch(`${API_BASE_URL}/benchmarks`, { cache: "no-store" }),
       fetch(`${API_BASE_URL}/settings`, { cache: "no-store" }),
     ]);
   const detectors = await detectorsResponse.json();

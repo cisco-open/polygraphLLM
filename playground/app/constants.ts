@@ -17,6 +17,8 @@ export const EVALUATION_PRINCIPLES_HELPER_TEXT: Record<string, string> = {
     "SelfCheckGPT Bertscore proposes an approach based on checking the self-consistency between an LLM response and a large number of additional responses, sampled from the same LLM using the same prompt. It computes agreement using BertScore. A higher score means a higher chance of being hallucinated. The score is bounded between 0.0 and 1.0.",
   [Detectors.SelfCheck_Prompt]:
     "This evaluation includes prompting an LLM to assess information consistency in a zero-shot setup. Querying an LLM aims at assessing whether the i-th sentence is supported by the sample (as the context). A higher score means a higher chance of being hallucinated. The score is bounded between 0.0 and 1.0.",
+  [Detectors.LLM_Uncertainty]:
+    "This evaluation defines a systematic framework with three components: prompting strategies for eliciting verbalized confidence, sampling methods for generating multiple responses, and aggregation techniques for computing consistency. Based on different parameters, LLM is prompted to provide its confidence level in the answer expressed in the range of 0 - 100.",
 };
 
 export const DETECTOR_PAPERS: Record<string, string> = {
@@ -26,4 +28,5 @@ export const DETECTOR_PAPERS: Record<string, string> = {
   [Detectors.SelfCheck_NGram]: "https://arxiv.org/abs/2303.08896",
   [Detectors.SelfCheck_BertScore]: "https://arxiv.org/abs/2303.08896",
   [Detectors.SelfCheck_Prompt]: "https://arxiv.org/abs/2303.08896",
+  [Detectors.LLM_Uncertainty]: "https://openreview.net/pdf?id=gjeQKFxFpZ",
 };
