@@ -220,6 +220,14 @@ const getEvaluationLabel = (
     }
   }
 
+  if (method === Detectors.ChatProtect) {
+    if (score === 0) {
+      return "Not hallucinated";
+    } else {
+      return "Hallucinated";
+    }
+  }
+
   if (
     (method === Detectors.Chainpoll ||
       method === Detectors.SelfCheck_BertScore ||

@@ -154,7 +154,8 @@ def datasets():
 def ask_llm():
     payload = request.get_json()
     question = payload.get('question')
-    answer = detector.ask_llm(question)
+    question_prompt = f"{question}\nPlease answer in a maximum of 2 sentences."    
+    answer = detector.ask_llm(question_prompt)
 
     return jsonify(answer)
 

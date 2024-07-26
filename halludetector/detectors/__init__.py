@@ -18,6 +18,7 @@ from .chainpoll import ChainPoll
 from .selfcheckgpt import SelfCheckGPTBertScore, SelfCheckGPTNGram, SelfCheckGPTMQAG, SelfCheckGPTPrompt
 from .refchecker import RefChecker
 from .geval import GEval
+from .chatProtect import ChatProtect
 from .llmUncertainty import LLMUncertainty
 
 DETECTORS = [
@@ -27,6 +28,7 @@ DETECTORS = [
     SelfCheckGPTPrompt,
     RefChecker,
     GEval,
+    ChatProtect,
     LLMUncertainty
 ]
 
