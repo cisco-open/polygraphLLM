@@ -58,6 +58,7 @@ class LLMUncertainty(Detector):
         pattern = r'Overall Confidence: (\d+)%' if self.prompt_strategy == "multi-step" else r'Confidence: (\d+)%'
 
         match = re.search(pattern, response[0])
+        confidence_level = 0
         if match:
             confidence_level = int(match.group(1))
         confidence_fraction = f"{confidence_level}/100"

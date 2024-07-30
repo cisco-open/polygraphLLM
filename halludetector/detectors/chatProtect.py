@@ -61,7 +61,7 @@ class ChatProtect(Detector):
             Statement 2:
             {stmt2}
 
-            Please explain whether the statements about {target} are contradictory.
+            Please explain whether the statements about {target} are contradictory or factually wrong.
             Provide your explanation only.
         """
         
@@ -138,6 +138,8 @@ class ChatProtect(Detector):
                         incons += 1
                 continue
             triples = self.extract_triplets(sentence)
+            if not triples:
+                triples = [answer]
 
             for triple in triples:
                 try:
@@ -159,7 +161,7 @@ class ChatProtect(Detector):
                 except Exception as e:
                     logging.error(f"Error processing sentence: {sentence}. Error: {str(e)}")
         if incons > 0:
-            summary.insert(0, "the count of detected hallucinations is {incons}")
+            summary.insert(0, f"the count of detected hallucinations is {incons}")
         else:
             summary.insert(0, "Hallucination is not detected.")
             
