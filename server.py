@@ -15,15 +15,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import json
 import os
-from copy import deepcopy
-from datetime import datetime
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
 
-from halludetector import calculate_score, init_config
+from halludetector import init_config
 from halludetector.datasets import get_benchmark
 from halludetector.benchmarks import get_benchmark, get_benchmarks_display_names
 # init before detector so it takes the configuration
