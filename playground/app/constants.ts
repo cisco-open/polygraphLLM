@@ -32,7 +32,7 @@ export const EVALUATION_PRINCIPLES_HELPER_TEXT: Record<string, string> = {
   [Detectors.SelfCheck_NGram]:
     "SelfCheckGPT NGram proposes an approach based on checking the self-consistency between an LLM response and a large number of additional responses, sampled from the same LLM using the same prompt. It computes agreement by fitting a simple unigram language model and using its probabilities on the original response. There is no score range available for this method.",
   [Detectors.SelfCheck_BertScore]:
-    "SelfCheckGPT Bertscore proposes an approach based on checking the self-consistency between an LLM response and a large number of additional responses, sampled from the same LLM using the same prompt. It computes agreement using BertScore. A higher score means a higher chance of being hallucinated. The score is bounded between 0.0 and 1.0.",
+    "SelfCheckGPT Bertscore proposes an approach based on checking the self-consistency between an LLM response and a large number of additional responses, sampled from the same LLM using the same prompt. It computes agreement using BertScore. A higher score means a higher chance of being hallucinated.",
   [Detectors.SelfCheck_Prompt]:
     "This evaluation includes prompting an LLM to assess information consistency in a zero-shot setup. Querying an LLM aims at assessing whether the i-th sentence is supported by the sample (as the context). A higher score means a higher chance of being hallucinated. The score is bounded between 0.0 and 1.0.",
   [Detectors.ChatProtect]:
