@@ -135,9 +135,6 @@ class SelfCheckGPTPrompt(Detector):
         elif text[:2] == 'no':
             text = 'no'
         else:
-            if text not in self.not_defined_text:
-                print(f"warning: {text} not defined")
-                self.not_defined_text.add(text)
             text = 'n/a'
         return self.text_mapping[text]
 

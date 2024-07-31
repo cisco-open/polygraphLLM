@@ -60,7 +60,7 @@ class GEval(Detector):
         normalized_score = score / max_score
         return normalized_score
 
-    def create_prompt(self, answer, summary, metric=os.getenv("GEVAL_METRIC")):
+    def create_prompt(self, answer, summary, metric):
         mapping = {
             "coherence": ("coh_detailed.txt", DEFAULT_COH_PROMPT),
             "consistency": ("con_detailed.txt", DEFAULT_CON_PRROMPT),

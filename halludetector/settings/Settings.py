@@ -33,12 +33,9 @@ class Settings:
     def update_settings(self, field_key, new_value):
         for field in self.settings:
             if field['key'] == field_key:
-                if field['type'] == 'number':
-                    field['value'] = int(new_value)
-                else:
-                    field['value'] = new_value
-                return
-            os.environ[field_key] = new_value
+                field['value'] = new_value
+                os.environ[field_key] = new_value
+                break
         else:
             raise KeyError(f"Field with '{field_key}' not found")
         

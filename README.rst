@@ -302,3 +302,7 @@ https://arxiv.org/abs/2310.18344
 
 https://openreview.net/pdf?id=gjeQKFxFpZ
 
+**Self-contradictory hallucinations of LLMs: Evaluation, detection and mitigation**
+
+https://arxiv.org/pdf/2305.15852
+
