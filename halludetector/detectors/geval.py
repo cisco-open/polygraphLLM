@@ -21,7 +21,7 @@ import re
 
 from .base import Detector
 
-from ..prompts.default import DEFAULT_COH_PROMPT, DEFAULT_FLU_PROMPT, DEFAUL_REL_PROMPT, DEFAULT_CON_PRROMPT
+from ..prompts.default import DEFAULT_COH_PROMPT, DEFAULT_FLU_PROMPT, DEFAUL_REL_PROMPT, DEFAULT_CON_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ class GEval(Detector):
     def create_prompt(self, answer, summary, metric):
         mapping = {
             "coherence": ("coh_detailed.txt", DEFAULT_COH_PROMPT),
-            "consistency": ("con_detailed.txt", DEFAULT_CON_PRROMPT),
+            "consistency": ("con_detailed.txt", DEFAULT_CON_PROMPT),
             "fluency": ("flu_detailed.txt", DEFAULT_FLU_PROMPT),
             "relevance": ("rel_detailed.txt", DEFAUL_REL_PROMPT)
         }
