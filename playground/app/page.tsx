@@ -17,13 +17,11 @@
  */
 
 import React from "react";
-import { Tabs, Box, Heading, Flex, Callout } from "@radix-ui/themes";
+import { Box, Heading, Flex, Callout } from "@radix-ui/themes";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { SettingsPage } from "./_components/SettingsPage";
-import { QuestionAnswerDetection } from "./_components/QuestionAnswerDetection";
-import { BenchmarksDetection } from "./_components/BenchmarksDetection";
-import styles from "./page.module.css";
 import { API_BASE_URL } from "./constants";
+import { TabNavigation } from "./_components/TabNavigation";
+import styles from "./page.module.css";
 
 export default async function Home() {
   const [detectorsResponse, benchmarksResponse, settingsResponse] =
@@ -59,29 +57,11 @@ export default async function Home() {
           </Callout.Root>
         </Flex>
       </Box>
-      <Tabs.Root defaultValue="qa_detection" style={{ width: "100%" }}>
-        <Tabs.List>
-          <Tabs.Trigger value="qa_detection">Q&A Detection</Tabs.Trigger>
-          <Tabs.Trigger value="benchmarks_detection">
-            Benchmarks Detection
-          </Tabs.Trigger>
-          <Tabs.Trigger value="settings">Settings</Tabs.Trigger>
-        </Tabs.List>
-        <Box pt="6">
-          <Tabs.Content value="qa_detection">
-            <QuestionAnswerDetection detectors={detectors.data} />
-          </Tabs.Content>
-          <Tabs.Content value="benchmarks_detection">
-            <BenchmarksDetection
-              detectors={detectors.data}
-              benchmarks={benchmarks.data}
-            />
-          </Tabs.Content>
-          <Tabs.Content value="settings">
-            <SettingsPage settings={settings.data} />
-          </Tabs.Content>
-        </Box>
-      </Tabs.Root>
+      <TabNavigation
+        detectors={detectors?.data}
+        benchmarks={benchmarks?.data}
+        settings={settings?.data}
+      />
     </main>
   );
 }

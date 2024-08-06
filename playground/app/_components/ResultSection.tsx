@@ -110,13 +110,19 @@ export const ResultSection = ({
             <DataList.Item align="center">
               <DataList.Label minWidth="88px">Reasoning:</DataList.Label>
               <DataList.Value>
-                <Flex direction="column" gap="0">
+                <Flex direction="column" gap="2">
                   {result[0].result[selectedResult].reasoning.map(
                     (item, idx) => {
                       if (item.includes("\n")) {
-                        return item
-                          .split("\n")
-                          .map((line, idx) => <Text key={idx}>{line}</Text>);
+                        return (
+                          <div key={idx}>
+                            {item.split("\n").map((line, idx) => (
+                              <Text key={idx} style={{ display: "block" }}>
+                                {line}
+                              </Text>
+                            ))}
+                          </div>
+                        );
                       } else {
                         return <Text key={idx}>{item}</Text>;
                       }

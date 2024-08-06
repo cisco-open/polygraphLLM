@@ -33,14 +33,19 @@ import toast, { Toaster } from "react-hot-toast";
 import { GERENAL_ERROR_MESSAGE } from "../constants";
 import { DetectionMethodsSection } from "./DetectionMethodsSection";
 import { askLLM, detectHallucinations } from "../utils";
-import { Detector, HallucinationDetectionResultItem } from "../types";
+import {
+  Detector,
+  HallucinationDetectionResultItem,
+  SettingsItem,
+} from "../types";
 import { ResultSection } from "./ResultSection";
 
 interface Props {
   detectors: Detector[];
+  settings: SettingsItem[];
 }
 
-export const QuestionAnswerDetection = ({ detectors }: Props) => {
+export const QuestionAnswerDetection = ({ detectors, settings }: Props) => {
   const INITIAL_STATE_SELECTED_METHODS = detectors.reduce((acc, { id }) => {
     acc[id] = true;
     return acc;
@@ -97,11 +102,29 @@ export const QuestionAnswerDetection = ({ detectors }: Props) => {
   });
 
   const handleSubmit = () => {
+    const localSettings: SettingsItem[] = localStorage.getItem("settings")
+      ? JSON.parse(localStorage.getItem("settings") as string)
+      : settings;
+
+    const keyValueSettings = localSettings.map(({ key, value }) => ({
+      key,
+      value,
+    }));
+
     detectHallucinationsMutation({
       methods: getSelectedMethods(),
       qas: [{ question, answer }],
+      settings: keyValueSettings,
     });
   };
+
+  useEffect(() => {
+    const localSettings = localStorage.getItem("settings");
+
+    if (!localSettings) {
+      localStorage.setItem("settings", JSON.stringify(settings));
+    }
+  }, []);
 
   useEffect(() => {
     if (isError) {

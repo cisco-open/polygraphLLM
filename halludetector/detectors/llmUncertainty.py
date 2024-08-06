@@ -15,7 +15,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-import os
 import re
 
 from .base import Detector
@@ -36,10 +35,9 @@ class LLMUncertainty(Detector):
 
     def __init__(self):
         super().__init__()
-        self.prompt_strategy = os.getenv("LLM_UNCERTAINTY_PROMPT_STRATEGY", "cot")
 
 
-    def create_prompt(self, question, answer):
+    def create_prompt(self, question, answer, prompt_strategy):
         mapping = {
             "cot": DEFAULT_LLM_UNCERTAINTY_COT_PROMPT,
             "vanilla": DEFAULT_LLM_UNCERTAINTY_VANILLA_PROMPT,
@@ -47,15 +45,18 @@ class LLMUncertainty(Detector):
             "multi-step": DEFAULT_LLM_UNCERTAINTY_MULTI_STEP_PROMPT
         }
 
-        return mapping[self.prompt_strategy].format(question=question, answer=answer)
+        return mapping[prompt_strategy].format(question=question, answer=answer)
 
-    def score(self, question, answer=None, samples=None, summary=None):
+    def score(self, question, answer=None, samples=None, summary=None, settings=None):
         if not answer:
             answer = self.ask_llm(question)[0]
         answer = answer.strip()
-        prompt = self.create_prompt(question, answer)
-        response = self.ask_llm(prompt, n=1)
-        pattern = r'Overall Confidence: (\d+)%' if self.prompt_strategy == "multi-step" else r'Confidence: (\d+)%'
+        prompt_strategy = self.find_settings_value(settings, "LLM_UNCERTAINTY_PROMPT_STRATEGY")
+        temperature = self.find_settings_value(settings, "OPENAI_TEMPERATURE")
+        
+        prompt = self.create_prompt(question, answer, prompt_strategy)
+        response = self.ask_llm(prompt, n=1, temperature=temperature)
+        pattern = r'Overall Confidence: (\d+)%' if prompt_strategy == "multi-step" else r'Confidence: (\d+)%'
 
         match = re.search(pattern, response[0])
         confidence_level = 0

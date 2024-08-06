@@ -29,13 +29,11 @@ import {
   Text,
   Tooltip,
 } from "@radix-ui/themes";
-import { useMutation } from "@tanstack/react-query";
 import toast, { Toaster } from "react-hot-toast";
-import { updateSettings } from "../utils";
-import { GERENAL_ERROR_MESSAGE } from "../constants";
 import { SettingsItem } from "../types";
 
 export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
+  const [localSettings, setLocalSettings] = useState<SettingsItem[]>([]);
   const sections = Array.from(new Set(settings.map((item) => item.section)));
   const [activeSection, setActiveSection] = useState(settings[0].section);
   const [activeSectionData, setActiveSectionData] = useState<SettingsItem[]>(
@@ -43,12 +41,28 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
   );
 
   useEffect(() => {
+    const localSettings = localStorage.getItem("settings");
+
+    if (localSettings) {
+      setLocalSettings(JSON.parse(localSettings));
+    } else {
+      localStorage.setItem("settings", JSON.stringify(settings));
+      setLocalSettings(settings);
+    }
+  }, []);
+
+  useEffect(() => {
     if (activeSection) {
       setActiveSectionData(
-        settings.filter((item) => item.section === activeSection)
+        localSettings.filter((item) => item.section === activeSection)
       );
     }
-  }, [activeSection]);
+  }, [activeSection, localSettings]);
+
+  const handleResetClick = () => {
+    localStorage.setItem("settings", JSON.stringify(settings));
+    setLocalSettings(settings);
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -83,35 +97,36 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
 
   const handleCancelClick = () => {
     setActiveSectionData(
-      settings.filter((item) => item.section === activeSection)
+      localSettings.filter((item) => item.section === activeSection)
     );
   };
 
-  const {
-    mutate: updateSettingsMutation,
-    isPending,
-    isError,
-    isSuccess,
-  } = useMutation({
-    mutationFn: updateSettings,
-  });
-
   const handleSaveClick = () => {
-    const data = findChangedItems(settings, activeSectionData);
-    updateSettingsMutation(data);
-  };
+    const data: { field_key: string; new_value: string }[] = findChangedItems(
+      localSettings,
+      activeSectionData
+    );
 
-  useEffect(() => {
-    if (isError) {
-      toast.error(GERENAL_ERROR_MESSAGE);
-    }
-  }, [isError]);
+    if (data?.length > 0) {
+      if (data?.some((item) => item.new_value === "")) {
+        toast.error("The field cannot be empty");
+        return;
+      }
 
-  useEffect(() => {
-    if (isSuccess) {
+      const updatedSettings = localSettings.map((setting) => {
+        const changedItem = data.find((item) => item.field_key === setting.key);
+        if (changedItem) {
+          return { ...setting, value: changedItem.new_value };
+        }
+        return setting;
+      });
+
+      localStorage.setItem("settings", JSON.stringify(updatedSettings));
+      setLocalSettings(updatedSettings);
+
       toast.success("Settings updated successfully!");
     }
-  }, [isSuccess]);
+  };
 
   return (
     <Flex direction="column" gap="3" width="70%">
@@ -171,25 +186,31 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
               </Flex>
             );
           })}
-          <Flex gap="4" align="center" justify="end">
-            <Button
-              variant="ghost"
-              onClick={handleCancelClick}
-              disabled={
-                findChangedItems(settings, activeSectionData).length === 0
-              }
-            >
-              Cancel
+          <Flex align="center">
+            <Button variant="soft" color="red" onClick={handleResetClick}>
+              Reset All
             </Button>
-            <Button
-              onClick={handleSaveClick}
-              loading={isPending}
-              disabled={
-                findChangedItems(settings, activeSectionData).length === 0
-              }
-            >
-              Save
-            </Button>
+            <Flex gap="4" align="center" ml="auto">
+              <Button
+                variant="ghost"
+                onClick={handleCancelClick}
+                disabled={
+                  findChangedItems(localSettings, activeSectionData).length ===
+                  0
+                }
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveClick}
+                disabled={
+                  findChangedItems(localSettings, activeSectionData).length ===
+                  0
+                }
+              >
+                Save
+              </Button>
+            </Flex>
           </Flex>
         </Flex>
       )}
