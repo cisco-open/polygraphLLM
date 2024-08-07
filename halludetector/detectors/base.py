@@ -16,6 +16,7 @@
 
 import os
 import logging
+from halludetector.settings.settings import Settings
 logger = logging.getLogger(__name__)
 
 
@@ -37,6 +38,7 @@ class Detector:
         self.checker = checker
         self.bertscorer = bertscorer
         self.ngramscorer = ngramscorer
+        self.settings_manager = Settings(f'{os.path.dirname(os.path.realpath(__file__))}/../../config.json')
 
     def ask_llm(self, *args, **kwargs):
         return self.llm_handler.ask_llm(*args, **kwargs)
@@ -55,6 +57,9 @@ class Detector:
 
     def check(self, *args, **kwargs):
         return self.checker.check(*args, **kwargs)
+    
+    def find_settings_value(self, settings, search_key):
+        return self.settings_manager.get_custom_settings_value(settings, search_key)
 
     def similarity_bertscore(self, sentences, sampled_passages):
         try:
@@ -72,5 +77,5 @@ class Detector:
             sampled_passages=sampled_passages,  # list of sampled passages
         )
 
-    def score(self, question, answer=None, samples=None, summary=None):
+    def score(self, question, answer=None, samples=None, summary=None, settings=None):
         raise NotImplementedError

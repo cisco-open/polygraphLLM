@@ -27,6 +27,7 @@ export interface DatasetItem {
 export interface HallucinationDetectionPayload {
   methods: string[];
   qas: Partial<DatasetItem>[];
+  settings?: { key: string; value: string }[];
 }
 
 export interface HallucinationDetectionResultItem {

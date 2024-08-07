@@ -123,7 +123,7 @@ class ChatProtect(Detector):
         generate_sentence = self.ask_llm(statement_template.format(topic, prefix, subject, predicate))
         return generate_sentence
 
-    def score(self, question, answer=None, samples=None, summary=None):
+    def score(self, question, answer=None, samples=None, summary=None, settings=None):
         sentences = self.extract_sentences(answer)
         sent_tagged_dict = defaultdict(list)
         prefix = ""

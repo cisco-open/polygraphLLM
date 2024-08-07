@@ -16,9 +16,6 @@ Evaluation Steps:
 4. Assign a relevance score from 1 to 5.
 
 
-Example:
-
-
 Source Text:
 
 {{Document}}

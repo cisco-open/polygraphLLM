@@ -32,9 +32,6 @@ Evaluation Steps:
 3. Assign a score for coherence on a scale of 1 to 5, where 1 is the lowest and 5 is the highest based on the Evaluation Criteria.
 
 
-Example:
-
-
 Source Text:
 
 {{Document}}
@@ -49,7 +46,7 @@ Evaluation Form (scores ONLY):
 - Coherence:
 '''
 
-DEFAULT_CON_PRROMPT = '''
+DEFAULT_CON_PROMPT = '''
 You will be given a news article. You will then be given one summary written for this article.
 
 Your task is to rate the summary on one metric.
@@ -66,9 +63,6 @@ Evaluation Steps:
 1. Read the news article carefully and identify the main facts and details it presents.
 2. Read the summary and compare it to the article. Check if the summary contains any factual errors that are not supported by the article.
 3. Assign a score for consistency based on the Evaluation Criteria.
-
-
-Example:
 
 
 Source Text:
@@ -102,8 +96,6 @@ Fluency (1-3): the quality of the summary in terms of grammar, spelling, punctua
 - 3: Good. The summary has few or no errors and is easy to read and follow.
 
 
-Example:
-
 Summary:
 
 {{Summary}}
@@ -131,9 +123,6 @@ Evaluation Steps:
 2. Compare the summary to the source document and identify the main points of the article.
 3. Assess how well the summary covers the main points of the article, and how much irrelevant or redundant information it contains.
 4. Assign a relevance score from 1 to 5.
-
-
-Example:
 
 
 Source Text:

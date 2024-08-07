@@ -15,7 +15,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import logging
-import os
 import spacy
 import numpy as np
 from selfcheckgpt.modeling_selfcheck import SelfCheckMQAG
@@ -32,16 +31,17 @@ class SelfCheckGPTBertScore(Detector):
 
     def __init__(self):
         super().__init__()
-        self.sample_number = int(os.getenv("BERT_SCORE_SAMPLING_NUMBER", 3))
 
-    def score(self, question, answer=None, samples=None, summary=None):
+    def score(self, question, answer=None, samples=None, summary=None, settings=None):
         if not answer:
             answer = self.ask_llm(question)[0]
 
         sentences = self.extract_sentences(answer)
         sentences = [s.text for s in sentences]
+        sample_number = self.find_settings_value(settings, "BERT_SCORE_SAMPLING_NUMBER")
+        temperature = self.find_settings_value(settings, "OPENAI_TEMPERATURE")
         if not samples:
-            samples = self.ask_llm(question, n=self.sample_number, temperature=0.4)
+            samples = self.ask_llm(question, n=sample_number, temperature=temperature)
 
         scores = self.similarity_bertscore(
             sentences=sentences,  # list of sentences
@@ -60,16 +60,17 @@ class SelfCheckGPTNGram(Detector):
 
     def __init__(self):
         super().__init__()
-        self.sample_number = int(os.getenv("NGRAM_SAMPLING_NUMBER", 3))
 
-    def score(self, question, answer=None, samples=None, summary=None):
+    def score(self, question, answer=None, samples=None, summary=None, settings=None):
         if not answer:
             answer = self.ask_llm(question)[0]
 
         sentences = self.extract_sentences(answer)
         sentences = [s.text for s in sentences]
+        sample_number = self.find_settings_value(settings, "NGRAM_SAMPLING_NUMBER")
+        temperature = self.find_settings_value(settings, "OPENAI_TEMPERATURE")
         if not samples:
-            samples = self.ask_llm(question, n=self.sample_number, temperature=0.4)
+            samples = self.ask_llm(question, n=sample_number, temperature=temperature)
 
         scores = self.similarity_ngram(
             sentences=sentences,
@@ -87,17 +88,19 @@ class SelfCheckGPTPrompt(Detector):
 
     def __init__(self):
         super().__init__()
-        self.sample_number = int(os.getenv("PROMPT_SAMPLING_NUMBER", 3))
         self.prompt_template = DEFAULT_SELFCHECK_WITH_PROMPT_PROMPT
         self.text_mapping = {'yes': 0.0, 'no': 1.0, 'n/a': 0.5}
 
-    def score(self, question, answer=None, samples=None, summary=None):
+    def score(self, question, answer=None, samples=None, summary=None, settings=None):
+
+        sample_number = self.find_settings_value(settings, "GPT_PROMPT_SAMPLING_NUMBER")
+        temperature = self.find_settings_value(settings, "OPENAI_TEMPERATURE")
 
         if not answer:
             answer = self.ask_llm(question)[0]
 
         if not samples:
-            samples = self.ask_llm(question, n=self.sample_number, temperature=0.4)
+            samples = self.ask_llm(question, n=sample_number, temperature=temperature)
 
         sentences = self.extract_sentences(answer)
         sentences = [s.text for s in sentences]

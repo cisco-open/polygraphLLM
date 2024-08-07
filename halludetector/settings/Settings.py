@@ -21,6 +21,14 @@ class Settings:
     def __init__(self, filename):
         self.filename = filename
         self.settings = self.load_settings()
+        self.default_values = {}
+
+    def get_custom_settings_value(self, settings, search_key):
+        for item in settings:
+            if item["key"] == search_key:
+                return item["value"]
+        
+        return self.get_settings_value(search_key)
 
     def load_settings(self):
         with open(self.filename, 'r') as f:

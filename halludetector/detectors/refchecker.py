@@ -24,7 +24,7 @@ class RefChecker(Detector):
     def __init__(self):
         super().__init__()
 
-    def score(self, question=None, answer=None, samples=None,summary=None):
+    def score(self, question=None, answer=None, samples=None,summary=None, settings=None):
         if not question:
             question = self.generate_question(answer)
 

@@ -21,7 +21,7 @@ import re
 
 from .base import Detector
 
-from ..prompts.default import DEFAULT_COH_PROMPT, DEFAULT_FLU_PROMPT, DEFAUL_REL_PROMPT, DEFAULT_CON_PRROMPT
+from ..prompts.default import DEFAULT_COH_PROMPT, DEFAULT_FLU_PROMPT, DEFAUL_REL_PROMPT, DEFAULT_CON_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ class GEval(Detector):
     def create_prompt(self, answer, summary, metric):
         mapping = {
             "coherence": ("coh_detailed.txt", DEFAULT_COH_PROMPT),
-            "consistency": ("con_detailed.txt", DEFAULT_CON_PRROMPT),
+            "consistency": ("con_detailed.txt", DEFAULT_CON_PROMPT),
             "fluency": ("flu_detailed.txt", DEFAULT_FLU_PROMPT),
             "relevance": ("rel_detailed.txt", DEFAUL_REL_PROMPT)
         }
@@ -76,7 +76,7 @@ class GEval(Detector):
         cur_prompt = prompt.replace('{{Document}}', answer).replace('{{Summary}}', summary)
         return cur_prompt
 
-    def score(self, question, answer=None, samples=None, summary=None):
+    def score(self, question, answer=None, samples=None, summary=None, settings=None):
         scores = {}
         samples = []
         if not answer:
@@ -87,7 +87,8 @@ class GEval(Detector):
             summary = self.ask_llm(summary_prompt)[0].strip()
         for metric in self.metrics:
             prompt = self.create_prompt(answer, summary, metric)
-            answers = self.ask_llm(prompt, n=int(os.getenv("GEVAL_SAMPLING_NUMBER", 20)))
+            n = self.find_settings_value(settings, "GEVAL_SAMPLING_NUMBER")
+            answers = self.ask_llm(prompt, n)
             samples.append(answers)
             all_scores = [self.parse_output(x.strip()) for x in answers]
             score = sum(all_scores) / len(all_scores)

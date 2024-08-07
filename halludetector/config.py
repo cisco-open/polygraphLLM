@@ -62,4 +62,4 @@ def init_building_blocks(force=False):
         retriever = RetrieverHandler(sentence_extractor)
         checker = CheckerHandler(sentence_extractor, llm_handler)
         bertscorer = SelfCheckBERTScore(rescale_with_baseline=True)
-        ngramscorer = SelfCheckNgram(n=int(os.getenv("NGRAM_N", 1)))
+        ngramscorer = SelfCheckNgram(n=1)

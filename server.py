@@ -23,13 +23,16 @@ from concurrent.futures import ThreadPoolExecutor
 from halludetector import init_config
 from halludetector.datasets import get_benchmark
 from halludetector.benchmarks import get_benchmark, get_benchmarks_display_names
+from dotenv import load_dotenv
+
 # init before detector so it takes the configuration
+load_dotenv()
 init_config(f'{os.path.dirname(os.path.realpath(__file__))}/config.json')
 
 from halludetector.detectors.base import Detector
 from halludetector.detectors import get_detector
 from halludetector.detectors import get_detectors_display_names
-from halludetector.settings.Settings import Settings
+from halludetector.settings.settings import Settings
 import logging
 
 detector = Detector()
@@ -44,6 +47,7 @@ def detect_route():
         data = request.get_json()
         methods = data.get('methods')
         qas = data.get('qas')
+        settings = data.get('settings')
 
         if not methods:
             return jsonify({'error': 'Detection method not provided'}), 400
@@ -70,7 +74,7 @@ def detect_route():
                 for method in methods:
                     detector = get_detector(method)
                     if detector:
-                        score, answer, responses = detector.score(question, answer, samples, context)
+                        score, answer, responses = detector.score(question, answer, samples, context, settings)
                         hallucination_scores[method] = {'score': score, 'reasoning': responses}
                     else:
                         return {'error': f'Invalid detection method provided: {method}'}
