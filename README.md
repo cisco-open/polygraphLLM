@@ -1,61 +1,63 @@
-Hallucination detector
-======================
+**FactualLLM** creates building blocks for generic approaches for hallucination detection in **Large Language Models (LLMs)**.
 
-This application creates building blocks for generic approaches for hallucination detection in Large language models.
+In the context of LLMs, **hallucination** refers to the generation of text that includes information or details that are not supported by the input or context provided to the model. Hallucinations occur when the model produces text that is incorrect, irrelevant, or not grounded in reality based on the input it receives.
+
+**FactualLLM** is intended to help in the detection of hallucinations.
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+    - [Installation](#installation)
+    - [Usage](#usage)
+        - [Playground](#playground)
+        - [Library](#library)
+- [Building blocks](#building-blocks)
+- [References](#references)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Getting Started
+
+### Installation
+
+#### Use a conda environment and install the followings
 
 
-Installation
-------------
+    pip install -e .
+    pip install -r requirements.txt
+    python3 -m spacy download en_core_web_sm
+ 
 
-Use a conda environment and install the followings.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#### Export envs for openai and google wrapper
 
-::
 
-   pip install -e .
-   pip install -r requirements.txt
+    export OPENAI_API_KEY=
+    export SERPER_API_KEY=
 
-   python3 -m spacy download en_core_web_sm
 
-Export envs for openai and google wrapper
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+### Usage
 
-::
+#### Playground
 
-   export OPENAI_API_KEY=
-   export SERPER_API_KEY=
 
-Usage
-------------
-
-as playground
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-::
-
-   cd playground
-   npm i
-   npm run dev
+    cd playground
+    npm i
+    npm run dev
 
 Go to http://localhost:3000/ and use the app.
 
 
 
-as library
-^^^^^^^^^^
+#### Library
 
-Instantiate the Base Detectors
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+##### Instantiate the Base Detectors
 
-::
 
     from halludetector.detectors.base import Detector
     detector = Detector()
 
-Requesting results from the LLM
-^^^^^^^^^
+##### Requesting results from the LLM
 
-::
 
     responses = detector.ask_llm(
     'Which Lactobacililus casei strain does not have the cholera toxin subunit'
@@ -66,10 +68,8 @@ Requesting results from the LLM
     )
     print(responses)
 
-Extract triplets from a text. (subject, predicate, object)
-^^^^^^^^^
+##### Extract triplets from a text. (subject, predicate, object)
 
-::
 
     triplets = detector.extract_triplets(
     'Which Lactobacililus casei strain does not have the cholera toxin subunit'
@@ -77,10 +77,8 @@ Extract triplets from a text. (subject, predicate, object)
     )
     print(triplets)
 
-Extract sentences from a text.
-^^^^^^^^^
+##### Extract sentences from a text.
 
-::
 
     sentences = detector.extract_sentences(
     'There is no specific Lactobacillus casei strain that is known to not have the cholera toxin subunit A1 (CTA1) on its surface.'
@@ -89,10 +87,8 @@ Extract sentences from a text.
     )
     print(sentences)
 
-Generate question from a given text.
-^^^^^^^^^^^
+##### Generate question from a given text.
 
-::
 
     question = detector.generate_question(
     'There is no specific Lactobacillus casei strain that is known to not have the cholera toxin subunit A1 (CTA1) on its surface.'
@@ -101,10 +97,8 @@ Generate question from a given text.
     )
     print(question)
 
-Retrieve information from the internet for a list of inputs
-^^^^^^^^^^^^^^^^^^
+##### Retrieve information from the internet for a list of inputs
 
-::
 
     results = detector.retrieve(
     ['What factors can affect the presence or absence of the cholera toxin subunit A1 on the surface of Lactobacillus casei strains?'],
@@ -113,10 +107,8 @@ Retrieve information from the internet for a list of inputs
     print(results)
 
 
-Check the hallucination scores using the triplets.
-^^^^^^^^^^^^^^^^^
+##### Check the hallucination scores using the triplets.
 
-::
 
     question = 'What factors can affect the presence or absence of the cholera toxin subunit A1 on the surface of Lactobacillus casei strains?'
     answer = detector.ask_llm(question, n=1)[0]
@@ -129,10 +121,8 @@ Check the hallucination scores using the triplets.
     print(results)
 
 
-Check the similarity of texts using bert score.
-^^^^^^^^^^^^^^^^^^
+##### Check the similarity of texts using bert score.
 
-::
 
     question = 'What factors can affect the presence or absence of the cholera toxin subunit A1 on the surface of Lactobacillus casei strains?'
     answers = detector.ask_llm(question, n=5)
@@ -145,10 +135,8 @@ Check the similarity of texts using bert score.
     print(scores)
 
 
-Check the similarity of texts using nGram model.
-^^^^^^^^^^^^^^^^^
+##### Check the similarity of texts using nGram model.
 
-::
 
     passage = "Michael Alan Weiner (born March 31, 1942) is an American radio host. He is the host of The Savage Nation."
     sentences = detector.extract_sentences(passage)
@@ -164,8 +152,7 @@ Check the similarity of texts using nGram model.
     print(scores)
 
 
-Building blocks
----------------
+## Building blocks
 
 This project implements generic approaches for hallucination detection.
 
@@ -197,12 +184,11 @@ You can implement any custom detector and combine all the available
 methods from above.
 
 
-Creating a new detector
-^^^^^^^^^^^^
+#### Creating a new detector
+
 In the detectors folder create a new file for your detector.
 Inherit the Detector Base class and implement the score method.
 
-::
 
     from halludetector.detectors.base import Detector
     class CustomDetector(Detector):
@@ -211,13 +197,11 @@ Inherit the Detector Base class and implement the score method.
             # do your logic.
             return score, answer, responses
 
-Creating a new LLM Handler
-^^^^^^^^^^
+#### Creating a new LLM Handler
 
 In the llm folder create a new file with your handler.
 See an example below.
 
-::
 
     class CustomHandler:
         def __init__(self):
@@ -242,46 +226,38 @@ use
 ``llm_handler = CustomHandler()``
 
 
-Implementing a new Benchmark
-^^^^^^^^^^
-In the datasets folder add a new file with your benchmark.
+#### Implementing a new Benchmark
 
-Inherit the **Parser** class and implement the **display** function as in this example.
+In the benchmarks folder add a new file with your benchmark.
 
-You must return the **data** and the **columns** you want to display in a specific order.
+Inherit the **DatasetParser** class and implement the **display** function as in this example.
 
 To use it with the UI you must add your newly implemented benchmark to the **BENCHMARKS** list in the **__init__.py** file of the same folder.
 
-::
 
-    class DollyParser(Parser):
-        display_name = 'Databricks Dolly'
-        _id = 'databricks-dolly'
+    class DatabricksDollyParser(DatasetParser):
+        display_name = 'Databricks dolly'
+        id = 'databricks-dolly'
 
-        def __init__(self):
+        def download_data(self):
             self.dataset = load_dataset('databricks/databricks-dolly-15k')
             self.dataset = self.dataset['train']
 
-        def display(self):
-            results = []
-
-            for element in self.dataset:
-                results.append(
-                    {
-                        'question': element['instruction'],
-                        'context': element['context'],
-                        'answer': element['response'],
-                        'category': element['category']
-                    }
-                )
-            return {
-                'data': results,
-                'columns': ['question', 'context', 'answer', 'category']
-            }
+        def display(self, offset, limit):
+            result = []
+            for item in self.dataset:
+                result.append({
+                    "id": uuid.uuid4(),
+                    "question": item["instruction"],
+                    "answer": item["response"],
+                    "context": item["context"],
+                })
+            return self.apply_offset_limit(result, offset, limit)
 
 
-References
-^^^^^^^^^^
+
+## References
+
 **G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment**
 
 https://arxiv.org/abs/2303.16634
@@ -306,3 +282,11 @@ https://openreview.net/pdf?id=gjeQKFxFpZ
 
 https://arxiv.org/pdf/2305.15852
 
+
+## Contributing
+
+Any contributions you make are greatly appreciated. For detailed contributing instructions, please check out [Contributing Guidelines](/CONTRIBUTING.md).
+
+## License
+
+[Apache License 2.0](LICENSE).
