@@ -1,8 +1,8 @@
-**FactualLLM** creates building blocks for generic approaches for hallucination detection in **Large Language Models (LLMs)**.
+**PolygraphLLM** creates building blocks for generic approaches for hallucination detection in **Large Language Models (LLMs)**.
 
 In the context of LLMs, **hallucination** refers to the generation of text that includes information or details that are not supported by the input or context provided to the model. Hallucinations occur when the model produces text that is incorrect, irrelevant, or not grounded in reality based on the input it receives.
 
-**FactualLLM** is intended to help in the detection of hallucinations.
+**PolygraphLLM** is intended to help in the detection of hallucinations.
 
 ## Table of Contents
 

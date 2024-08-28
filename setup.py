@@ -27,14 +27,14 @@ requirements = parse_requirements('requirements.txt')
 
 
 setup(
-    name='FactualLLM',
+    name='PolygraphLLM',
     version='0.1.0',
     author='Ali Payani',
     author_email='apayani@cisco.com',
     url='https://wwwin-github.cisco.com/apayani/FactualLLM',  # Replace with your project's URL
     license='MIT',  # Choose an appropriate license
     description="Hallucination detection package",
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     include_package_data=True,
     packages=find_packages(),
     package_data={
