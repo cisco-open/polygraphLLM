@@ -38,7 +38,7 @@ export default async function Home() {
     <main className={styles.main}>
       <Box>
         <Heading size="7" mb="3">
-          FactualLLM
+          PolygraphLLM
         </Heading>
         <Flex width="50%">
           <Callout.Root>
@@ -52,7 +52,7 @@ export default async function Home() {
               the model. Hallucinations occur when the model produces text that
               is incorrect, irrelevant, or not grounded in reality based on the
               input it receives.{" "}
-              <strong>FactualLLM can help you detect hallucinations.</strong>
+              <strong>PolygraphLLM can help you detect hallucinations.</strong>
             </Callout.Text>
           </Callout.Root>
         </Flex>
