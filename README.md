@@ -1,3 +1,5 @@
+<p align="center"><img src="logo.png" alt="polygraphLLM logo" width="400"/></p>
+
 **PolygraphLLM** creates building blocks for generic approaches for hallucination detection in **Large Language Models (LLMs)**.
 
 In the context of LLMs, **hallucination** refers to the generation of text that includes information or details that are not supported by the input or context provided to the model. Hallucinations occur when the model produces text that is incorrect, irrelevant, or not grounded in reality based on the input it receives.
