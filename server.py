@@ -21,7 +21,6 @@ from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
 
 from src import init_config
-from src.datasets import get_benchmark
 from src.benchmarks import get_benchmark, get_benchmarks_display_names
 from dotenv import load_dotenv
 

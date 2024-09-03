@@ -38,6 +38,7 @@ import {
   DatasetItem,
   Detector,
   HallucinationDetectionResultItem,
+  SettingsItem,
 } from "../types";
 import { detectHallucinations } from "../utils";
 import { ResultSection } from "./ResultSection";
@@ -47,16 +48,21 @@ const DATASET_LIMIT_PER_OFFSET = 10;
 interface Props {
   benchmarks: BenchmarkItem[];
   detectors: Detector[];
+  settings: SettingsItem[];
 }
 
-export const BenchmarksDetection = ({ benchmarks, detectors }: Props) => {
+export const BenchmarksDetection = ({
+  benchmarks,
+  detectors,
+  settings,
+}: Props) => {
   const INITIAL_STATE_SELECTED_METHODS = detectors.reduce((acc, { id }) => {
     acc[id] = true;
     return acc;
   }, {} as { [key: string]: boolean });
   const [dataset, setDataset] = useState<DatasetItem[]>([]);
   const [result, setResult] = useState<HallucinationDetectionResultItem[]>([]);
-  const [selectedDataset, setSelectedDataset] = useState(benchmarks[0].id);
+  const [selectedDataset, setSelectedDataset] = useState("covid-qa");
   const [selectedMethods, setSelectedMethods] = useState<
     Record<string, boolean>
   >(INITIAL_STATE_SELECTED_METHODS);
@@ -108,7 +114,7 @@ export const BenchmarksDetection = ({ benchmarks, detectors }: Props) => {
     mutationFn: detectHallucinations,
     onSuccess: (data) => {
       setResult(data);
-      setSelectedResult(Object.keys(data[0].result)[0]);
+      setSelectedResult(Object.keys(data[0].result)[0] as string);
     },
   });
 
@@ -135,9 +141,19 @@ export const BenchmarksDetection = ({ benchmarks, detectors }: Props) => {
   };
 
   const handleSubmit = () => {
+    const localSettings: SettingsItem[] = localStorage.getItem("settings")
+      ? JSON.parse(localStorage.getItem("settings") as string)
+      : settings;
+
+    const keyValueSettings = localSettings.map(({ key, value }) => ({
+      key,
+      value,
+    }));
+
     detectHallucinationsMutation({
       methods: getSelectedMethods(),
       qas: dataset.filter((item) => item.id === selectedItemId),
+      settings: keyValueSettings,
     });
   };
 
@@ -148,11 +164,13 @@ export const BenchmarksDetection = ({ benchmarks, detectors }: Props) => {
   useEffect(() => {
     setSelectedItemId(null);
     refetch();
-  }, [selectedDataset]);
+  }, [selectedDataset, refetch]);
 
   useEffect(() => {
     if (dataset.length > 0) {
-      setSelectedItemId(dataset[0].id);
+      if (dataset[0]?.id) {
+        setSelectedItemId(dataset[0].id);
+      }
     } else {
       setSelectedItemId(null);
     }
@@ -187,7 +205,7 @@ export const BenchmarksDetection = ({ benchmarks, detectors }: Props) => {
             setResult([]);
             setSelectedDataset(dataset);
           }}
-          defaultValue="drop"
+          defaultValue="covid-qa"
         >
           <Select.Trigger placeholder="Select dataset" />
           <Select.Content>

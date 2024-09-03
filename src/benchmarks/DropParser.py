@@ -23,7 +23,7 @@ class DropParser(DatasetParser):
     id = 'drop'
 
     def download_data(self):
-        self.dataset = load_dataset('EleutherAI/drop')
+        self.dataset = load_dataset('EleutherAI/drop', trust_remote_code=True)
         self.dataset = self.dataset['train']
 
 

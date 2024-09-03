@@ -14,7 +14,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-import requests
+import os
+import json
 import uuid
 from .DatasetParser import DatasetParser
 
@@ -22,10 +23,12 @@ class CovidQAParser(DatasetParser):
     display_name = 'Covid QA'
     id = 'covid-qa'
 
-    def download_data(self):
-        url = 'https://raw.githubusercontent.com/deepset-ai/COVID-QA/master/data/question-answering/COVID-QA.json'
-        response = requests.get(url)
-        self.dataset = response.json()
+    def __init__(self, file='../datasets/Covid-QA.json'):
+        self.file = file
+        if self.file.startswith('..'):
+            self.file = f'{os.path.dirname(os.path.realpath(__file__))}/{file}'
+        with open(self.file, 'r') as parsefile:
+            self.dataset = json.loads(parsefile.read())
 
     def display(self, offset, limit):
         result = []
