@@ -18,7 +18,7 @@
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Tabs, Box } from "@radix-ui/themes";
 import { QuestionAnswerDetection } from "./QuestionAnswerDetection";
 import { BenchmarksDetection } from "./BenchmarksDetection";
@@ -32,13 +32,7 @@ interface Props {
 }
 
 export const TabNavigation = ({ detectors, benchmarks, settings }: Props) => {
-  const [activeTab, setActiveTab] = useState(
-    sessionStorage.getItem("tab") || "qa_detection"
-  );
-
-  useEffect(() => {
-    sessionStorage.setItem("tab", activeTab);
-  }, [activeTab]);
+  const [activeTab, setActiveTab] = useState("qa_detection");
 
   return (
     <Tabs.Root defaultValue={activeTab} style={{ width: "100%" }}>
@@ -64,7 +58,11 @@ export const TabNavigation = ({ detectors, benchmarks, settings }: Props) => {
           <QuestionAnswerDetection detectors={detectors} settings={settings} />
         </Tabs.Content>
         <Tabs.Content value="benchmarks_detection">
-          <BenchmarksDetection detectors={detectors} benchmarks={benchmarks} />
+          <BenchmarksDetection
+            detectors={detectors}
+            benchmarks={benchmarks}
+            settings={settings}
+          />
         </Tabs.Content>
         <Tabs.Content value="settings">
           <SettingsPage settings={settings} />
