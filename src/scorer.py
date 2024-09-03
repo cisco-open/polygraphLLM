@@ -16,7 +16,7 @@
 
 import logging
 
-from halludetector.detectors import (
+from src.detectors import (
     ChainPoll, SelfCheckGPTBertScore,
     SelfCheckGPTNGram, SelfCheckGPTMQAG,
     RefChecker, GEval,

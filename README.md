@@ -55,7 +55,7 @@ Go to http://localhost:3000/ and use the app.
 ##### Instantiate the Base Detectors
 
 
-    from halludetector.detectors.base import Detector
+    from src.detectors.base import Detector
     detector = Detector()
 
 ##### Requesting results from the LLM
@@ -192,7 +192,7 @@ In the detectors folder create a new file for your detector.
 Inherit the Detector Base class and implement the score method.
 
 
-    from halludetector.detectors.base import Detector
+    from src.detectors.base import Detector
     class CustomDetector(Detector):
 
         def score(self, question, answer=None, samples=None, summary=None):

@@ -22,7 +22,7 @@ import click
 
 from openai import OpenAI
 
-from halludetector import calculate_score, init_config
+from src import calculate_score, init_config
 
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 

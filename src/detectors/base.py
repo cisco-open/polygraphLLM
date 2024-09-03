@@ -16,17 +16,17 @@
 
 import os
 import logging
-from halludetector.settings.settings import Settings
+from src.settings.settings import Settings
 logger = logging.getLogger(__name__)
 
 
 class Detector:
 
     def __init__(self):
-        from halludetector.config import init_config
+        from src.config import init_config
         init_config(f'{os.path.dirname(os.path.realpath(__file__))}/../../config.json')
 
-        from halludetector.config import (
+        from src.config import (
             llm_handler, triplets_extractor, sentence_extractor, question_generator,
             retriever, checker, bertscorer, ngramscorer,
         )

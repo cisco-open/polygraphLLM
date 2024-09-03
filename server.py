@@ -20,19 +20,19 @@ from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
 
-from halludetector import init_config
-from halludetector.datasets import get_benchmark
-from halludetector.benchmarks import get_benchmark, get_benchmarks_display_names
+from src import init_config
+from src.datasets import get_benchmark
+from src.benchmarks import get_benchmark, get_benchmarks_display_names
 from dotenv import load_dotenv
 
 # init before detector so it takes the configuration
 load_dotenv()
 init_config(f'{os.path.dirname(os.path.realpath(__file__))}/config.json')
 
-from halludetector.detectors.base import Detector
-from halludetector.detectors import get_detector
-from halludetector.detectors import get_detectors_display_names
-from halludetector.settings.settings import Settings
+from src.detectors.base import Detector
+from src.detectors import get_detector
+from src.detectors import get_detectors_display_names
+from src.settings.settings import Settings
 import logging
 
 detector = Detector()
