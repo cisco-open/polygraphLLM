@@ -17,11 +17,13 @@
  */
 
 import React from "react";
-import { Box, Heading, Flex, Callout } from "@radix-ui/themes";
+import { Flex, Callout } from "@radix-ui/themes";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { API_BASE_URL } from "./constants";
 import { TabNavigation } from "./_components/TabNavigation";
+import Logo from "../public/logo.png";
 import styles from "./page.module.css";
+import Image from "next/image";
 
 export default async function Home() {
   const [detectorsResponse, benchmarksResponse, settingsResponse] =
@@ -36,10 +38,19 @@ export default async function Home() {
 
   return (
     <main className={styles.main}>
-      <Box>
-        <Heading size="7" mb="3">
-          PolygraphLLM
-        </Heading>
+      <Flex direction="column" gap="2">
+        <Flex gap="2" align="center">
+          <Image
+            src={Logo}
+            width={140}
+            height={120}
+            alt="logo"
+            style={{ marginLeft: "-10px" }}
+          />
+          {/* <Heading size="7" mb="3">
+            PolygraphLLM
+          </Heading> */}
+        </Flex>
         <Flex width="50%">
           <Callout.Root>
             <Callout.Icon>
@@ -56,7 +67,7 @@ export default async function Home() {
             </Callout.Text>
           </Callout.Root>
         </Flex>
-      </Box>
+      </Flex>
       <TabNavigation
         detectors={detectors?.data}
         benchmarks={benchmarks?.data}

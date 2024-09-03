@@ -19,6 +19,6 @@
 .main {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
-  padding: 2rem 4rem;
+  gap: 2rem;
+  padding: 1rem 4rem;
 }
