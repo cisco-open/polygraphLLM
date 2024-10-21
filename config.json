@@ -1,0 +1,102 @@
+[
+  {
+    "section": "General",
+    "key": "OPENAI_API_KEY",
+    "name": "OpenAI API key",
+    "description": "API key to access OpenAI servers",
+    "value": "sk-xxxxx",
+    "secret": true,
+    "type": "password"
+  },
+  {
+    "section": "General",
+    "key": "SERPER_API_KEY",
+    "name": "Serper API key",
+    "description": "API key for SERPER",
+    "value": "4f3f4da752196d480624443fac6f8b7201c94d94",
+    "secret": true,
+    "type": "password"
+  },
+  {
+    "section": "General",
+    "key": "OPENAI_MODEL",
+    "name": "OpenAI Model",
+    "description": "Model to be used for OpenAI requests",
+    "value": "gpt-3.5-turbo-instruct",
+    "secret": false,
+    "type": "text"
+  },
+  {
+    "section": "General",
+    "key": "OPENAI_MAX_TOKENS",
+    "name": "OpenAI Max Tokens",
+    "description": "Maximum number of tokens in OpenAI response. 4096 is the maximum",
+    "value": 600,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "General",
+    "key": "OPENAI_TEMPERATURE",
+    "name": "OpenAI Temperature",
+    "description": "Temperature for OpenAI response generation. It is bounded between 0 and 2",
+    "value": 0.8,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "SelfCheckGPT",
+    "key": "BERT_SCORE_SAMPLING_NUMBER",
+    "name": "SelfCheckGPT BertScore Sampling Number",
+    "description": "Number of generated samples for SelfCheckGPT BertScore",
+    "value": 2,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "SelfCheckGPT",
+    "key": "GPT_PROMPT_SAMPLING_NUMBER",
+    "name": "SelfCheck GPT Prompt Sampling Number",
+    "description": "Number of generated samples for SelfCheck GPT Prompt",
+    "value": 1,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "SelfCheckGPT",
+    "key": "NGRAM_SAMPLING_NUMBER",
+    "name": "SelfCheckGPT NGram Sampling Number",
+    "description": "Number of generated samples for SelfCheckGPT NGram",
+    "value": 3,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "ChainPoll",
+    "key": "CHAINPOLL_SAMPLING_NUMBER",
+    "name": "Chainpoll Polling Frequency",
+    "description": "Number of times to poll the LLM",
+    "value": 5,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "G-Eval",
+    "key": "GEVAL_SAMPLING_NUMBER",
+    "name": "G-Eval Polling Frequency",
+    "description": "Number of times to poll the LLM",
+    "value": 6,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "LLM-Uncertainty",
+    "key": "LLM_UNCERTAINTY_PROMPT_STRATEGY",
+    "name": "LLM Uncertainty Prompt Strategy",
+    "description": "Prompting strategy for LLM Uncertainty method",
+    "value": "cot",
+    "secret": false,
+    "type": "select",
+    "values": "vanilla, cot, multi-step, self-probing"
+  }
+]

@@ -1,0 +1,8 @@
+Does the following completion contain hallucinations?
+Completion: {completion}
+It was based on this question:
+Question: {question}
+Use chain of thought to explain the completion. Rebuild the completion using your answer and check again if the completion is right.
+It is mandatory that your first word in your response is yes or no as the response of the following question.
+It is mandatory to explain yourself after.
+Does this completion contain hallucinations?
