@@ -31,7 +31,7 @@ setup(
     version='0.1.0',
     author='Ali Payani',
     author_email='apayani@cisco.com',
-    url='https://wwwin-github.cisco.com/apayani/FactualLLM',  # Replace with your project's URL
+    url='https://github.com/cisco-open/polygraphLLM',
     license='MIT',  # Choose an appropriate license
     description="Hallucination detection package",
     long_description=open('README.md').read(),
