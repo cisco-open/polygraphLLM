@@ -31,3 +31,4 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 from .scorer import calculate_score
 from .config import init_config
+from .detectors.base import Detector

@@ -5,7 +5,7 @@ botocore==1.34.54
 bs4==0.0.2
 click==8.1.7
 datasets==2.18.0
-dotenv==1.0.1
+python-dotenv==1.0.1
 diskcache==5.6.3
 Flask==3.0.2
 Flask-Cors==4.0.0

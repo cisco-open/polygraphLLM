@@ -27,18 +27,19 @@ requirements = parse_requirements('requirements.txt')
 
 
 setup(
-    name='PolygraphLLM',
+    name='polygraphLLM',
     version='0.1.0',
     author='Ali Payani',
     author_email='apayani@cisco.com',
     url='https://github.com/cisco-open/polygraphLLM',
-    license='MIT',  # Choose an appropriate license
+    license='Apache-2.0',
     description="Hallucination detection package",
-    long_description=open('README.md').read(),
+    long_description=open('assets/README_pypi.md').read(),
+    long_description_content_type='text/markdown',
     include_package_data=True,
     packages=find_packages(),
     package_data={
-        '': ['*.json'],  # Include all JSON files in the package
+        '': ['*.json'],
         'logos': ['*.png'],
         'js': ['*.js'],
         'txt': ['*.txt']
