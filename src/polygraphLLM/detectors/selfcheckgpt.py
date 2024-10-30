@@ -38,8 +38,8 @@ class SelfCheckGPTBertScore(Detector):
 
         sentences = self.extract_sentences(answer)
         sentences = [s.text for s in sentences]
-        sample_number = self.find_settings_value(settings, "BERT_SCORE_SAMPLING_NUMBER")
-        temperature = self.find_settings_value(settings, "OPENAI_TEMPERATURE")
+        sample_number = int(self.find_settings_value(settings, "BERT_SCORE_SAMPLING_NUMBER"))
+        temperature = float(self.find_settings_value(settings, "OPENAI_TEMPERATURE"))
         if not samples:
             samples = self.ask_llm(question, n=sample_number, temperature=temperature)
 
@@ -67,8 +67,8 @@ class SelfCheckGPTNGram(Detector):
 
         sentences = self.extract_sentences(answer)
         sentences = [s.text for s in sentences]
-        sample_number = self.find_settings_value(settings, "NGRAM_SAMPLING_NUMBER")
-        temperature = self.find_settings_value(settings, "OPENAI_TEMPERATURE")
+        sample_number = int(self.find_settings_value(settings, "NGRAM_SAMPLING_NUMBER"))
+        temperature = float(self.find_settings_value(settings, "OPENAI_TEMPERATURE"))
         if not samples:
             samples = self.ask_llm(question, n=sample_number, temperature=temperature)
 
@@ -93,8 +93,8 @@ class SelfCheckGPTPrompt(Detector):
 
     def score(self, question, answer=None, samples=None, summary=None, settings=None):
 
-        sample_number = self.find_settings_value(settings, "GPT_PROMPT_SAMPLING_NUMBER")
-        temperature = self.find_settings_value(settings, "OPENAI_TEMPERATURE")
+        sample_number = int(self.find_settings_value(settings, "GPT_PROMPT_SAMPLING_NUMBER"))
+        temperature = float(self.find_settings_value(settings, "OPENAI_TEMPERATURE"))
 
         if not answer:
             answer = self.ask_llm(question)[0]

@@ -18,13 +18,15 @@
 from setuptools import find_packages, setup
 
 
-def parse_requirements(filename):
-    with open(filename, 'r') as f:
-        return [line.strip() for line in f if line.strip() and not line.startswith("#")]
+from setuptools import setup, find_packages
+import os
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
 
-requirements = parse_requirements('requirements.txt')
-
+readme_path = os.path.join(os.path.dirname(__file__), 'assets', 'README_pypi.md')
+with open(readme_path, 'r') as f:
+    long_description = f.read()
 
 setup(
     name='polygraphLLM',
@@ -34,15 +36,13 @@ setup(
     url='https://github.com/cisco-open/polygraphLLM',
     license='Apache-2.0',
     description="Hallucination detection package",
-    long_description=open('assets/README_pypi.md').read(),
+    long_description=long_description,
     long_description_content_type='text/markdown',
     include_package_data=True,
-    packages=find_packages(),
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
+    install_requires=requirements,
     package_data={
-        '': ['*.json'],
-        'logos': ['*.png'],
-        'js': ['*.js'],
-        'txt': ['*.txt']
-    },
-    install_requires=requirements
+        '': ['*.json', '*.png', '*.js', '*.txt']
+    }
 )

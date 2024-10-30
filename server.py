@@ -16,22 +16,24 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import os
+import sys
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
 
-from src import init_config
-from src.benchmarks import get_benchmark, get_benchmarks_display_names
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'src'))
+
+from polygraphLLM.config import init_config
+from polygraphLLM.benchmarks import get_benchmark, get_benchmarks_display_names
 from dotenv import load_dotenv
 
 # init before detector so it takes the configuration
 load_dotenv()
-init_config(f'{os.path.dirname(os.path.realpath(__file__))}/config.json')
+init_config(f'{os.path.dirname(os.path.realpath(__file__))}/src/polygraphLLM/config.json')
 
-from src.detectors.base import Detector
-from src.detectors import get_detector
-from src.detectors import get_detectors_display_names
-from src.settings.settings import Settings
+from polygraphLLM.detectors.base import Detector
+from polygraphLLM.detectors import get_detector, get_detectors_display_names
+from polygraphLLM.settings.settings import Settings
 import logging
 
 detector = Detector()
@@ -69,7 +71,7 @@ def detect_route():
                     return {'error': 'Question not provided'}
 
                 hallucination_scores = {}
-                
+
                 for method in methods:
                     detector = get_detector(method)
                     if detector:
@@ -114,12 +116,11 @@ def download_benchmark_data(benchmark_id):
         return jsonify({"data": data})
     except Exception as e:
         logging.error(f'Error in download_benchmark_data: {e}')
-        return jsonify({'error': 'An unexpected error occurred'}), 500    
-
+        return jsonify({'error': 'An unexpected error occurred'}), 500
 
 @app.route('/settings', methods=['GET', 'PUT'])
 def settings():
-    settings_manager = Settings('config.json')
+    settings_manager = Settings(f'{os.path.dirname(os.path.realpath(__file__))}/src/polygraphLLM/config.json')
     if request.method == 'PUT':
         payload = request.json
         try:
@@ -154,7 +155,7 @@ def datasets():
 def ask_llm():
     payload = request.get_json()
     question = payload.get('question')
-    question_prompt = f"{question}\nPlease answer in a maximum of 2 sentences."    
+    question_prompt = f"{question}\nPlease answer in a maximum of 2 sentences."
     answer = detector.ask_llm(question_prompt)
 
     return jsonify(answer)
@@ -166,8 +167,8 @@ def get_detectors_display_name():
 
 @app.route('/benchmarks', methods=['GET'])
 def get_benchmarks_display_name():
-        benchmarks = get_benchmarks_display_names()
-        return jsonify({"data": benchmarks})
+    benchmarks = get_benchmarks_display_names()
+    return jsonify({"data": benchmarks})
 
 
 if __name__ == '__main__':

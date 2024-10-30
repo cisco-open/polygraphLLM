@@ -15,6 +15,12 @@ In the context of LLMs, **hallucination** refers to the generation of text that 
 The source code is currently hosted on GitHub at: https://github.com/cisco-open/polygraphLLM
 
 
+## Export envs and install a small SpaCy model
+
+    export OPENAI_API_KEY=
+    export SERPER_API_KEY=
+    python3 -m spacy download en_core_web_sm
+
 ## Usage
 
 

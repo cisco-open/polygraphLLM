@@ -19,12 +19,12 @@ import os
 
 from selfcheckgpt.modeling_selfcheck import SelfCheckBERTScore, SelfCheckNgram
 
-from src.llm.openai import OpenAIHandler
-from src.llm.mistral import MistralHandler
-from src.extractor.extractor import TripletsExtractorHandler, SentenceExtractorHandler
-from src.generators.question import QuestionGenerator
-from src.retrievers.retriever import RetrieverHandler
-from src.checker.checker import CheckerHandler
+from polygraphLLM.llm.openai import OpenAIHandler
+from polygraphLLM.llm.mistral import MistralHandler
+from polygraphLLM.extractor.extractor import TripletsExtractorHandler, SentenceExtractorHandler
+from polygraphLLM.generators.question import QuestionGenerator
+from polygraphLLM.retrievers.retriever import RetrieverHandler
+from polygraphLLM.checker.checker import CheckerHandler
 
 llm_handler = None
 triplets_extractor = None
