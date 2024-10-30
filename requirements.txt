@@ -17,6 +17,7 @@ openai==1.13.3
 rank-bm25==0.2.2
 safetensors==0.4.2
 selfcheckgpt==0.1.6
+setuptools>=40.8.0
 spacy==3.7.4
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5

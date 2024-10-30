@@ -52,7 +52,7 @@ class LLMUncertainty(Detector):
             answer = self.ask_llm(question)[0]
         answer = answer.strip()
         prompt_strategy = self.find_settings_value(settings, "LLM_UNCERTAINTY_PROMPT_STRATEGY")
-        temperature = self.find_settings_value(settings, "OPENAI_TEMPERATURE")
+        temperature = float(self.find_settings_value(settings, "OPENAI_TEMPERATURE"))
         
         prompt = self.create_prompt(question, answer, prompt_strategy)
         response = self.ask_llm(prompt, n=1, temperature=temperature)

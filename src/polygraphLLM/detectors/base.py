@@ -16,17 +16,19 @@
 
 import os
 import logging
-from src.settings.settings import Settings
+from polygraphLLM.settings.settings import Settings
 logger = logging.getLogger(__name__)
 
 
 class Detector:
 
     def __init__(self):
-        from src.config import init_config
-        init_config(f'{os.path.dirname(os.path.realpath(__file__))}/../../config.json')
+        from polygraphLLM.config import init_config
 
-        from src.config import (
+        config_path = os.path.join(os.path.dirname(__file__), '..', 'config.json')
+        init_config(config_path)
+
+        from polygraphLLM.config import (
             llm_handler, triplets_extractor, sentence_extractor, question_generator,
             retriever, checker, bertscorer, ngramscorer,
         )
@@ -38,7 +40,7 @@ class Detector:
         self.checker = checker
         self.bertscorer = bertscorer
         self.ngramscorer = ngramscorer
-        self.settings_manager = Settings(f'{os.path.dirname(os.path.realpath(__file__))}/../../config.json')
+        self.settings_manager = Settings(config_path)
 
     def ask_llm(self, *args, **kwargs):
         return self.llm_handler.ask_llm(*args, **kwargs)
