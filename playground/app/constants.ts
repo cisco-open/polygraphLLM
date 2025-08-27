@@ -39,6 +39,8 @@ export const EVALUATION_PRINCIPLES_HELPER_TEXT: Record<string, string> = {
     "The mitigation algorithm of this evaluation technique iteratively refines the generated text by comparing each segment of the text with alternative outputs, employing an well-structured prompting strategy. The score shows the count of hallucinated segments identified by the algorithm in the LLM output.",
   [Detectors.LLM_Uncertainty]:
     "This evaluation defines a systematic framework with three components: prompting strategies for eliciting verbalized confidence, sampling methods for generating multiple responses, and aggregation techniques for computing consistency. Based on different parameters, LLM is prompted to provide its confidence level in the answer expressed in the range of 0 - 100.",
+  [Detectors.SNNE]:
+    "SNNE introduces a novel black-box uncertainty quantification method to address the limitations of semantic entropy in detecting hallucinations in long-generation scenarios. The approach effectively accounts for both intra-and inter-cluster similarities and mitigate outliers, which are critical for accurate uncertainty estimation in modern LLMs.",
 };
 
 export const DETECTOR_PAPERS: Record<string, string> = {
@@ -50,4 +52,5 @@ export const DETECTOR_PAPERS: Record<string, string> = {
   [Detectors.SelfCheck_Prompt]: "https://arxiv.org/abs/2303.08896",
   [Detectors.ChatProtect]: "https://arxiv.org/pdf/2305.15852",
   [Detectors.LLM_Uncertainty]: "https://openreview.net/pdf?id=gjeQKFxFpZ",
+  [Detectors.SNNE]: "https://arxiv.org/pdf/2506.00245",
 };

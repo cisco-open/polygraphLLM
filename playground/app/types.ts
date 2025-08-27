@@ -79,4 +79,5 @@ export enum Detectors {
   SelfCheck_Prompt = "self_check_gpt_prompt",
   ChatProtect = "chatProtect",
   LLM_Uncertainty = "llm_uncertainty",
+  SNNE = "snne",
 }

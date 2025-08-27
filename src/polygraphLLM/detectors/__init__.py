@@ -20,6 +20,7 @@ from .refchecker import RefChecker
 from .geval import GEval
 from .chatProtect import ChatProtect
 from .llmUncertainty import LLMUncertainty
+from .snne import SNNE
 
 DETECTORS = [
     ChainPoll, 
@@ -29,7 +30,8 @@ DETECTORS = [
     RefChecker,
     GEval,
     ChatProtect,
-    LLMUncertainty
+    LLMUncertainty,
+    SNNE
 ]
 
 def get_detectors_display_names():

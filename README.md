@@ -383,6 +383,9 @@ https://openreview.net/pdf?id=gjeQKFxFpZ
 
 https://arxiv.org/pdf/2305.15852
 
+**Beyond Semantic Entropy: Boosting LLM Uncertainty Quantification with Pairwise Semantic Similarity**
+
+https://arxiv.org/pdf/2506.00245
 
 ## Contributing
 
