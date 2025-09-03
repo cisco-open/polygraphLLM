@@ -38,7 +38,9 @@ export interface HallucinationDetectionResultItem {
   result: Record<
     string,
     {
-      score: number | string | Record<string, number>;
+      is_hallucinated: boolean;
+      raw_score: number | string;
+      threshold: number;
       reasoning: string[];
     }
   >;

@@ -16,19 +16,19 @@
 
 import os
 import logging
-from polygraphLLM.settings.settings import Settings
+from polygraphLLM.utils.settings.settings import Settings
 logger = logging.getLogger(__name__)
 
 
 class Detector:
 
     def __init__(self):
-        from polygraphLLM.config import init_config
+        from polygraphLLM.utils.config import init_config
 
-        config_path = os.path.join(os.path.dirname(__file__), '..', 'config.json')
+        config_path = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'config.json')
         init_config(config_path)
 
-        from polygraphLLM.config import (
+        from polygraphLLM.utils.config import (
             llm_handler, triplets_extractor, sentence_extractor, question_generator,
             retriever, checker, bertscorer, ngramscorer,
         )
@@ -80,4 +80,21 @@ class Detector:
         )
 
     def score(self, question, answer=None, samples=None, summary=None, settings=None):
+        raise NotImplementedError
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Should be implemented by subclasses.
+        
+        Args:
+            question: Input question
+            answer: Model answer (optional, will be generated if not provided)
+            samples: Sample responses (optional)
+            summary: Summary (optional)
+            settings: Configuration settings (optional)
+            threshold: Threshold for hallucination detection (0.0 to 1.0)
+            
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
         raise NotImplementedError

@@ -16,7 +16,7 @@
 
 import logging
 
-from polygraphLLM.detectors import (
+from polygraphLLM.algorithms import (
     ChainPoll, SelfCheckGPTBertScore,
     SelfCheckGPTNGram, SelfCheckGPTMQAG,
     RefChecker, GEval,

@@ -20,7 +20,7 @@ import numpy as np
 from selfcheckgpt.modeling_selfcheck import SelfCheckMQAG
 
 from .base import Detector
-from ..prompts.default import DEFAULT_SELFCHECK_WITH_PROMPT_PROMPT
+from ..utils.prompts.default import DEFAULT_SELFCHECK_WITH_PROMPT_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +52,20 @@ class SelfCheckGPTBertScore(Detector):
         else:
             scores = 'FAILED'
         return scores, answer, samples
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Lower BertScore indicates hallucination.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        score, answer, samples = self.score(question, answer, samples, summary, settings)
+        if score == 'FAILED':
+            return False, 0.0, answer, samples
+        # Lower similarity score indicates higher chance of hallucination
+        is_hallucinated = bool(score < threshold)
+        return is_hallucinated, score, answer, samples
 
 
 class SelfCheckGPTNGram(Detector):
@@ -80,6 +94,18 @@ class SelfCheckGPTNGram(Detector):
 
         scores = float("{:.2f}".format(scores['doc_level']['avg_neg_logprob']))
         return scores, answer, samples
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Higher negative log probability indicates hallucination.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        score, answer, samples = self.score(question, answer, samples, summary, settings)
+        # Unbounded score makes threshold-based determination unreliable, defaulting to False
+        is_hallucinated = False  
+        return is_hallucinated, score, answer, samples
 
 
 class SelfCheckGPTPrompt(Detector):
@@ -116,6 +142,18 @@ class SelfCheckGPTPrompt(Detector):
                 scores[sent_i, sample_i] = score_
         scores_per_sentence = scores.mean(axis=-1)
         return sum(scores_per_sentence)/len(scores_per_sentence), answer, samples
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Higher score indicates hallucination.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        score, answer, samples = self.score(question, answer, samples, summary, settings)
+        # Higher score indicates higher chance of hallucination
+        is_hallucinated = bool(score > threshold)
+        return is_hallucinated, score, answer, samples
 
     def set_prompt_template(self, prompt_template: str):
         self.prompt_template = prompt_template
@@ -171,3 +209,15 @@ class SelfCheckGPTMQAG(Detector):
         )
         scores = float("{:.2f}".format(sum(scores)/len(scores)))
         return scores, answer, samples
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Higher score indicates hallucination.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        score, answer, samples = self.score(question, answer, samples, summary)
+        # Higher score indicates higher chance of hallucination
+        is_hallucinated = bool(score > threshold)
+        return is_hallucinated, score, answer, samples

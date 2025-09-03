@@ -17,33 +17,50 @@
 
 import os
 import sys
+
+# Add src directory to Python path for local imports
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'src'))
+
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from concurrent.futures import ThreadPoolExecutor
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'src'))
-
-from polygraphLLM.config import init_config
-from polygraphLLM.benchmarks import get_benchmark, get_benchmarks_display_names
+from polygraphLLM.utils.config import init_config
+from polygraphLLM.utils.benchmarks import get_benchmark, get_benchmarks_display_names
 from dotenv import load_dotenv
 
 # init before detector so it takes the configuration
 load_dotenv()
-init_config(f'{os.path.dirname(os.path.realpath(__file__))}/src/polygraphLLM/config.json')
+init_config(f'{os.path.dirname(os.path.realpath(__file__))}/config.json')
 
-from polygraphLLM.detectors.base import Detector
-from polygraphLLM.detectors import get_detector, get_detectors_display_names
-from polygraphLLM.settings.settings import Settings
+from polygraphLLM.algorithms.base import Detector
+from polygraphLLM.algorithms import get_detector, get_detectors_display_names
+from polygraphLLM.utils.settings.settings import Settings
 import logging
 
 detector = Detector()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, 
+     origins=["http://localhost:3000"],
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
 
 
-@app.route('/detect', methods=['POST'])
-def detect_route():
+@app.route('/detect', methods=['POST', "OPTIONS"])
+def detect_hallucination_route():
+    """
+    New threshold-based detection route that returns boolean results
+    """
+    # Handle CORS preflight request
+    if request.method == 'OPTIONS':
+        print(f"OPTIONS request received from: {request.headers.get('Origin', 'Unknown')}")
+        response = jsonify({'status': 'ok'})
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        return response
+        
     try:
         data = request.get_json()
         methods = data.get('methods')
@@ -55,6 +72,29 @@ def detect_route():
 
         if not qas or not isinstance(qas, list):
             return jsonify({'error': 'Invalid or empty question-answer pairs provided'}), 400
+
+        def get_threshold_for_method(method, detector_instance):
+            """Get threshold for a detection method from settings"""
+            # Map method IDs to threshold setting keys
+            threshold_mapping = {
+                'chainpoll': 'CHAINPOLL_THRESHOLD',
+                'refchecker': 'REFCHECKER_THRESHOLD',
+                'self_check_gpt_bertscore': 'SELFCHECK_BERTSCORE_THRESHOLD',
+                'self_check_gpt_ngram': 'SELFCHECK_NGRAM_THRESHOLD',
+                'self_check_gpt_prompt': 'SELFCHECK_PROMPT_THRESHOLD',
+                'g_eval': 'GEVAL_THRESHOLD',
+                'chatProtect': 'CHATPROTECT_THRESHOLD',
+                'llm_uncertainty': 'LLM_UNCERTAINTY_THRESHOLD',
+                'snne': 'SNNE_THRESHOLD'
+            }
+            
+            threshold_key = threshold_mapping.get(method)
+            if threshold_key and settings:
+                try:
+                    return float(detector_instance.find_settings_value(settings, threshold_key))
+                except:
+                    pass
+            return 0.5  # Default threshold
 
         def process_question_answer(qa):
             try:
@@ -70,13 +110,21 @@ def detect_route():
                 if not question:
                     return {'error': 'Question not provided'}
 
-                hallucination_scores = {}
+                hallucination_results = {}
 
                 for method in methods:
-                    detector = get_detector(method)
-                    if detector:
-                        score, answer, responses = detector.score(question, answer, samples, context, settings)
-                        hallucination_scores[method] = {'score': score, 'reasoning': responses}
+                    detector_instance = get_detector(method)
+                    if detector_instance:
+                        threshold = get_threshold_for_method(method, detector_instance)
+                        is_hallucinated, raw_score, answer, additional_data = detector_instance.detect_hallucination(
+                            question, answer, samples, context, settings, threshold
+                        )
+                        hallucination_results[method] = {
+                            'is_hallucinated': is_hallucinated,
+                            'raw_score': raw_score,
+                            'threshold': threshold,
+                            'reasoning': additional_data
+                        }
                     else:
                         return {'error': f'Invalid detection method provided: {method}'}
 
@@ -85,11 +133,11 @@ def detect_route():
                     'question': question,
                     'answer': answer,
                     'context': context,
-                    'result': hallucination_scores
+                    'result': hallucination_results
                 }
             except Exception as e:
                 logging.error(f'Error processing QA: {e}')
-                return jsonify({'error': f'An error occurred processing QA: {e}'}), 500
+                return {'error': f'An error occurred processing QA: {e}'}
 
         # Execute processing in parallel
         with ThreadPoolExecutor(max_workers=5) as executor:
@@ -97,7 +145,7 @@ def detect_route():
 
         return jsonify(results)
     except Exception as e:
-        logging.error(f'Error in detect_hallucinations_route: {e}')
+        logging.error(f'Error in detect_hallucination_route: {e}')
         return jsonify({'error': 'An unexpected error occurred'}), 500
     
 @app.route('/download/<benchmark_id>', methods=['GET'])
@@ -120,7 +168,7 @@ def download_benchmark_data(benchmark_id):
 
 @app.route('/settings', methods=['GET', 'PUT'])
 def settings():
-    settings_manager = Settings(f'{os.path.dirname(os.path.realpath(__file__))}/src/polygraphLLM/config.json')
+    settings_manager = Settings(f'{os.path.dirname(os.path.realpath(__file__))}/config.json')
     if request.method == 'PUT':
         payload = request.json
         try:
@@ -155,7 +203,7 @@ def datasets():
 def ask_llm():
     payload = request.get_json()
     question = payload.get('question')
-    question_prompt = f"{question}\nPlease answer in a maximum of 2 sentences."
+    question_prompt = f"{question}\nPlease answer as concise as possible, in a maximum of 2 sentences."
     answer = detector.ask_llm(question_prompt)
 
     return jsonify(answer)

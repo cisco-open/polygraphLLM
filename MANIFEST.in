@@ -1,4 +1,4 @@
 include requirements.txt
 include assets/README_pypi.md
-include src/polygraphLLM/config.json
+include config.json
 recursive-include src *

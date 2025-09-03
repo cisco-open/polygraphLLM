@@ -18,7 +18,7 @@ import logging
 import os
 
 from .base import Detector
-from ..prompts.default import DEFAULT_CHAINPOLL_PROMPT
+from ..utils.prompts.default import DEFAULT_CHAINPOLL_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -49,3 +49,14 @@ class ChainPoll(Detector):
 
         score = hallucinations.count(True) / len(hallucinations)
         return score, answer, responses
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        score, answer, responses = self.score(question, answer, samples, summary, settings)
+        is_hallucinated = bool(score > threshold)
+        return is_hallucinated, score, answer, responses

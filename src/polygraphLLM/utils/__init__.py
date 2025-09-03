@@ -14,4 +14,29 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from .snne import SNNE
+# Import utilities from submodules
+from .config import init_config, init_building_blocks
+# Note: scorer is available as polygraphLLM.utils.scorer to avoid heavy imports at package level
+
+# Export all utility modules for easy access
+from . import benchmarks
+from . import checker
+from . import extractor
+from . import generators
+from . import llm
+from . import retrievers
+from . import settings
+from . import prompts
+
+__all__ = [
+    'init_config',
+    'init_building_blocks', 
+    'benchmarks',
+    'checker',
+    'extractor', 
+    'generators',
+    'llm',
+    'retrievers',
+    'settings',
+    'prompts'
+]

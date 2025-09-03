@@ -65,7 +65,6 @@ pandas==2.3.2
 peft==0.17.1
 pillow==11.3.0
 platformdirs==4.4.0
--e git+https://github.com/cisco-open/polygraphLLM.git@9237d420f5d0b03a06bb6910a7b675b762988bc3#egg=polygraphLLM
 preshed==3.0.10
 propcache==0.3.2
 protobuf==6.32.0

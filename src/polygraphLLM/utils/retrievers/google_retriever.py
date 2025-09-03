@@ -103,7 +103,9 @@ class GoogleRetriever:
             for attribute, value in kg.get("attributes", {}).items():
                 element = {"content": f"{attribute}: {value}", "source": kg.get("link")}
                 snippets.append(element)
-        for result in results["organic"][:3]:
+        # Handle organic results if they exist
+        organic_results = results.get("organic", [])
+        for result in organic_results[:3]:
             if "snippet" in result:
                 element = {"content": result["snippet"], "source": result["link"]}
                 snippets.append(element)
@@ -176,7 +178,7 @@ class GoogleRetriever:
         skip_repeated_corpus=True,
     ) -> List[Dict[str, Union[str, None]]]:  # {"content": <text>, "url": <url>}
         if len(docs) == 0:
-            return None
+            return []
         if len(docs) == 1:
             return docs
         else:
@@ -257,9 +259,10 @@ class GoogleRetriever:
                 max_words_per_paragraph=max_words_per_paragraph,
                 skip_repeated_corpus=True,
             )
-            if with_answerbox:
-                best_docs.insert(0, answerbox_answer)
-            best_docs_all.extend(best_docs)
+            if best_docs is not None:
+                if with_answerbox:
+                    best_docs.insert(0, answerbox_answer)
+                best_docs_all.extend(best_docs)
         refs = [
             doc["content"] for doc in best_docs_all
         ]

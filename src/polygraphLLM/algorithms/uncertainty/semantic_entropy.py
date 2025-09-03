@@ -26,9 +26,9 @@ import torch.nn.functional as F
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from sentence_transformers import SentenceTransformer
 
-from ..models.huggingface_models import HuggingfaceModel
-from ..utils.utils import save, md5hash
-from ..utils.entropy_utils import greedy_clustering, dfs_clustering, snne, entailment_similarity_matrix
+from .models.huggingface_models import HuggingfaceModel
+from .utils.utils import save, md5hash
+from .utils.entropy_utils import greedy_clustering, dfs_clustering, snne, entailment_similarity_matrix
 
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
