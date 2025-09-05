@@ -105,28 +105,49 @@ export const ResultSection = ({
               <DataList.Value>{result[0].context}</DataList.Value>
             </DataList.Item>
           )}
-          {!!result[0].result[selectedResult].reasoning &&
-          selectedResult !== Detectors.G_Eval ? (
+          {!!result[0].result[selectedResult].reasoning ? (
             <DataList.Item align="center">
               <DataList.Label minWidth="88px">Reasoning:</DataList.Label>
               <DataList.Value>
                 <Flex direction="column" gap="2">
-                  {result[0].result[selectedResult].reasoning.map(
-                    (item, idx) => {
-                      if (item.includes("\n")) {
-                        return (
-                          <div key={idx}>
-                            {item.split("\n").map((line, idx) => (
-                              <Text key={idx} style={{ display: "block" }}>
-                                {line}
-                              </Text>
-                            ))}
-                          </div>
-                        );
-                      } else {
-                        return <Text key={idx}>{item}</Text>;
+                  {Array.isArray(result[0].result[selectedResult].reasoning) ? (
+                    result[0].result[selectedResult].reasoning.map(
+                      (item, idx) => {
+                        if (typeof item === "object" && item !== null) {
+                          return (
+                            <Text key={idx}>
+                              {(JSON.stringify(item), null, 2)}
+                            </Text>
+                          );
+                        } else if (
+                          typeof item === "string" &&
+                          item.includes("\n")
+                        ) {
+                          return (
+                            <div key={idx}>
+                              {item.split("\n").map((line, idx) => (
+                                <Text key={idx} style={{ display: "block" }}>
+                                  {line}
+                                </Text>
+                              ))}
+                            </div>
+                          );
+                        } else {
+                          return <Text key={idx}>{item}</Text>;
+                        }
                       }
-                    }
+                    )
+                  ) : (
+                    <Text>
+                      {typeof result[0].result[selectedResult].reasoning ===
+                      "object"
+                        ? JSON.stringify(
+                            result[0].result[selectedResult].reasoning,
+                            null,
+                            2
+                          )
+                        : result[0].result[selectedResult].reasoning}
+                    </Text>
                   )}
                 </Flex>
               </DataList.Value>
@@ -134,7 +155,9 @@ export const ResultSection = ({
           ) : null}
           <DataList.Item align="center">
             <DataList.Label minWidth="88px">Score:</DataList.Label>
-            <ScoreDataListValue val={result[0].result[selectedResult].score} />
+            <ScoreDataListValue
+              val={result[0].result[selectedResult].raw_score}
+            />
           </DataList.Item>
           <DataList.Item align="center">
             <DataList.Label minWidth="88px">Citation:</DataList.Label>
@@ -150,10 +173,15 @@ export const ResultSection = ({
           <DataList.Item align="center">
             <DataList.Label minWidth="88px">Evaluation:</DataList.Label>
             <DataList.Value>
-              <EvaluationDataListValue
-                method={selectedResult as Detectors}
-                score={result[0].result[selectedResult].score}
-              />
+              {selectedResult === Detectors.SelfCheck_NGram ? (
+                "N/A"
+              ) : (
+                <EvaluationDataListValue
+                  isHallucinated={
+                    result[0].result[selectedResult].is_hallucinated
+                  }
+                />
+              )}
             </DataList.Value>
           </DataList.Item>
         </DataList.Root>
@@ -163,21 +191,11 @@ export const ResultSection = ({
 };
 
 const EvaluationDataListValue = ({
-  method,
-  score,
+  isHallucinated,
 }: {
-  method: Detectors;
-  score: number | string | Record<string, number>;
+  isHallucinated: boolean;
 }) => {
-  let evaluation = getEvaluationLabel(method, score);
-
-  if (method !== Detectors.SelfCheck_NGram) {
-    if (evaluation.toLowerCase().includes("not")) {
-      evaluation += " ✅";
-    } else {
-      evaluation += " ❌";
-    }
-  }
+  const evaluation = isHallucinated ? "Hallucinated ❌" : "Not hallucinated ✅";
 
   return (
     <DataList.Value style={{ display: "flex", alignItems: "center" }}>
@@ -206,71 +224,4 @@ const ScoreDataListValue = ({
   }
 
   return <DataList.Value>{val}</DataList.Value>;
-};
-
-const getEvaluationLabel = (
-  method: Detectors,
-  score: string | number | Record<string, number>
-): string => {
-  if (method === Detectors.G_Eval && typeof score === "object") {
-    score = score["Total"];
-
-    if (score === 0) {
-      return "Hallucinated";
-    } else if (score <= 0.5) {
-      return "Most likely hallucinated";
-    } else if (score === 1) {
-      return "Not hallucinated";
-    } else {
-      return "Most likely not hallucinated";
-    }
-  }
-
-  if (method === Detectors.ChatProtect) {
-    if (score === 0) {
-      return "Not hallucinated";
-    } else {
-      return "Hallucinated";
-    }
-  }
-
-  if (
-    (method === Detectors.Chainpoll ||
-      method === Detectors.SelfCheck_BertScore ||
-      method === Detectors.SelfCheck_Prompt) &&
-    typeof score === "number"
-  ) {
-    if (score === 0) {
-      return "Not hallucinated";
-    } else if (score <= 0.5) {
-      return "Most likely not hallucinated";
-    } else if (score === 1) {
-      return "Hallucinated";
-    } else {
-      return "Most likely hallucinated";
-    }
-  }
-
-  if (method === Detectors.LLM_Uncertainty && typeof score === "string") {
-    score = Number(score?.split("/")[0]);
-    if (score === 100) {
-      return "Not hallucinated";
-    } else if (score > 50) {
-      return "Most likely not hallucinated";
-    } else {
-      return "Most likely hallucinated";
-    }
-  }
-
-  if (method === Detectors.Refchecker && typeof score === "object") {
-    if (score["Entailment"] > 0.5) {
-      return "Not hallucinated";
-    } else if (score["Contradiction"] > 0.2) {
-      return "Hallucinated";
-    } else {
-      return "Most likely hallucinated";
-    }
-  }
-
-  return "N/A";
 };

@@ -141,8 +141,10 @@ export const BenchmarksDetection = ({
   };
 
   const handleSubmit = () => {
-    const localSettings: SettingsItem[] = localStorage.getItem("settings")
-      ? JSON.parse(localStorage.getItem("settings") as string)
+    const localSettings: SettingsItem[] = localStorage.getItem(
+      "polygraphLLM_settings"
+    )
+      ? JSON.parse(localStorage.getItem("polygraphLLM_settings") as string)
       : settings;
 
     const keyValueSettings = localSettings.map(({ key, value }) => ({

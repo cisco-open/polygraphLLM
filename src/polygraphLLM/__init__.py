@@ -29,6 +29,6 @@ logging.root.setLevel(logging.INFO)
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
-from .scorer import calculate_score
-from .config import init_config
-from .detectors.base import Detector
+# Core imports that don't have heavy dependencies
+from .utils.config import init_config
+from .algorithms.base import Detector

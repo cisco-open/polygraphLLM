@@ -26,7 +26,7 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-from ..utils import utils
+from .utils import utils
 
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"

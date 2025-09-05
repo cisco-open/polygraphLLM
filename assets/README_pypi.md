@@ -23,9 +23,43 @@ The source code is currently hosted on GitHub at: https://github.com/cisco-open/
 
 ## Usage
 
+### Basic Usage with Base Detector
 
     from polygraphLLM import Detector
     detector = Detector()
+
+### Using Specific Detection Algorithms
+
+You can import and use specific hallucination detection algorithms:
+
+    # Import individual detectors
+    from polygraphLLM.algorithms import ChainPoll, RefChecker, GEval, ChatProtect
+    from polygraphLLM.algorithms import SelfCheckGPTBertScore, SelfCheckGPTNGram
+    
+    # Initialize a specific detector
+    detector = ChainPoll()
+    
+    # Detect hallucinations with threshold
+    question = "What is the capital of France?"
+    answer = "The capital of France is Paris."
+    is_hallucinated, score, answer, additional_data = detector.detect_hallucination(
+        question, answer, threshold=0.5
+    )
+    print(f"Is hallucinated: {is_hallucinated}, Score: {score}")
+
+### Quick Start Examples
+
+    # Using ChainPoll for consistency checking
+    from polygraphLLM.algorithms import ChainPoll
+    detector = ChainPoll()
+    question = "What is the largest mammal?"
+    answer = "The largest mammal is the blue whale."
+    is_hallucinated, score = detector.detect_hallucination(question, answer)
+    
+    # Using SelfCheckGPT for sampling-based detection
+    from polygraphLLM.algorithms import SelfCheckGPTBertScore
+    self_check = SelfCheckGPTBertScore()
+    is_hallucinated, score = self_check.detect_hallucination(question, answer)
 
 #### Requesting results from the LLM
 
@@ -123,34 +157,37 @@ The source code is currently hosted on GitHub at: https://github.com/cisco-open/
 
 ## Building blocks
 
-This project implements generic approaches for hallucination detection.
+This project implements generic approaches for hallucination detection through multiple specialized algorithms.
 
-The ``Detector`` base class implements the building blocks to detect
-hallucinations and score them.
+### Core Methods
 
-``ask_llm`` - method to request N responses from an LLM via a prompt
+Each detector implements these key methods:
 
-``extract_triplets`` - method to extract subject, predicate, object from
-a text.
+``detect_hallucination(question, answer, threshold)`` - main detection method returning boolean result and confidence score
 
-``extract_sentences`` - method to split a text into sentences using
-spacy
+``score(question, answer, samples, summary, settings)`` - returns numerical hallucination score
 
-``generate_question`` - method to generate a question from a text
+``ask_llm(prompt, n, temperature, max_tokens)`` - request N responses from an LLM
 
-``retrieve`` - method to retrieve information from google via the serper
-api
+### Utility Methods
 
-``check`` - method to check if the claims contain hallucinations
+The base ``Detector`` class also provides building blocks for custom implementations:
 
-``similarity_bertscore`` - method to check the similarity between texts
-via bertscore
+``extract_triplets`` - extract (subject, predicate, object) triplets from text
 
-``similarity_ngram`` - method to check the similarity between texts via
-ngram model
+``extract_sentences`` - split text into sentences using spacy
 
-You can implement any custom detector and combine all the available
-methods from above.
+``generate_question`` - generate questions from given text
+
+``retrieve`` - retrieve information from Google via the Serper API
+
+``check`` - verify claims against reference information
+
+``similarity_bertscore`` - measure text similarity using BERTScore
+
+``similarity_ngram`` - measure text similarity using n-gram models
+
+You can implement custom detectors by inheriting from the base class and combining these methods.
 
 
 ## References

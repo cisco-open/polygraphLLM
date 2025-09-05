@@ -55,10 +55,28 @@
   },
   {
     "section": "SelfCheckGPT",
+    "key": "SELFCHECK_BERTSCORE_THRESHOLD",
+    "name": "SelfCheck BertScore Threshold",
+    "description": "Threshold for SelfCheck BertScore hallucination detection (0.0-1.0). Lower scores indicate hallucination.",
+    "value": 0.7,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "SelfCheckGPT",
     "key": "GPT_PROMPT_SAMPLING_NUMBER",
     "name": "SelfCheck GPT Prompt Sampling Number",
     "description": "Number of generated samples for SelfCheck GPT Prompt",
     "value": 1,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "SelfCheckGPT",
+    "key": "SELFCHECK_PROMPT_THRESHOLD",
+    "name": "SelfCheck Prompt Threshold",
+    "description": "Threshold for SelfCheck Prompt hallucination detection (0.0-1.0). Higher scores indicate hallucination.",
+    "value": 0.5,
     "secret": false,
     "type": "number"
   },
@@ -81,11 +99,29 @@
     "type": "number"
   },
   {
+    "section": "ChainPoll",
+    "key": "CHAINPOLL_THRESHOLD",
+    "name": "Chain Poll Threshold",
+    "description": "Threshold for Chain Poll hallucination detection (0.0-1.0). Higher values are more likely to be hallucinated.",
+    "value": 0.5,
+    "secret": false,
+    "type": "number"
+  },
+  {
     "section": "G-Eval",
     "key": "GEVAL_SAMPLING_NUMBER",
     "name": "G-Eval Polling Frequency",
     "description": "Number of times to poll the LLM",
     "value": 6,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "G-Eval",
+    "key": "GEVAL_THRESHOLD",
+    "name": "G-Eval Threshold",
+    "description": "Threshold for G-Eval hallucination detection (0.0-1.0). Lower quality scores indicate hallucination.",
+    "value": 0.5,
     "secret": false,
     "type": "number"
   },
@@ -98,5 +134,41 @@
     "secret": false,
     "type": "select",
     "values": "vanilla, cot, multi-step, self-probing"
+  },
+  {
+    "section": "LLM-Uncertainty",
+    "key": "LLM_UNCERTAINTY_THRESHOLD",
+    "name": "LLM Uncertainty Threshold",
+    "description": "Threshold for LLM Uncertainty hallucination detection (0.0-1.0). Lower confidence indicates hallucination.",
+    "value": 0.6,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "RefChecker",
+    "key": "REFCHECKER_THRESHOLD",
+    "name": "RefChecker Threshold",
+    "description": "Threshold for RefChecker hallucination detection (0.0-1.0). Higher contradiction ratios indicate hallucination.",
+    "value": 0.3,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "ChatProtect",
+    "key": "CHATPROTECT_THRESHOLD",
+    "name": "ChatProtect Threshold",
+    "description": "Threshold for ChatProtect hallucination detection (0.0-1.0). Higher inconsistency ratios indicate hallucination.",
+    "value": 0.3,
+    "secret": false,
+    "type": "number"
+  },
+  {
+    "section": "SNNE",
+    "key": "SNNE_THRESHOLD",
+    "name": "SNNE Threshold",
+    "description": "Threshold for SNNE hallucination detection (0.0-1.0). Higher entropy indicates hallucination.",
+    "value": 0.5,
+    "secret": false,
+    "type": "number"
   }
 ]

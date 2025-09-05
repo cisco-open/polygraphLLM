@@ -166,3 +166,17 @@ class ChatProtect(Detector):
             summary.insert(0, "Hallucination is not detected.")
             
         return incons, answer, summary
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Higher inconsistency count indicates hallucination.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        incons_count, answer, summary = self.score(question, answer, samples, summary, settings)
+        # Convert inconsistency count to a ratio for threshold comparison
+        total_checks = incons_count + (len(self.extract_sentences(answer)) if answer else 1)
+        inconsistency_ratio = incons_count / max(total_checks, 1)
+        is_hallucinated = bool(inconsistency_ratio > threshold)
+        return is_hallucinated, inconsistency_ratio, answer, summary

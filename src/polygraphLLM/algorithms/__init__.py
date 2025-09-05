@@ -19,8 +19,34 @@ from .selfcheckgpt import SelfCheckGPTBertScore, SelfCheckGPTNGram, SelfCheckGPT
 from .refchecker import RefChecker
 from .geval import GEval
 from .chatProtect import ChatProtect
-from .llmUncertainty import LLMUncertainty
-from .snne import SNNE
+
+try:
+    from .uncertainty import SNNE, LLMUncertainty
+except ImportError as e:
+    import logging
+    logging.warning(f"Could not import SNNE/LLMUncertainty due to missing dependencies: {e}")
+    SNNE = None
+    LLMUncertainty = None
+
+# Import chainpoll detector
+chainpoll = ChainPoll
+
+# Import chatProtect detector  
+chatProtect = ChatProtect
+
+# Import geval detector
+geval = GEval
+
+# Import refchecker detector
+refchecker = RefChecker
+
+# Import selfcheckgpt detectors
+selfcheckgpt = {
+    'SelfCheckGPTBertScore': SelfCheckGPTBertScore,
+    'SelfCheckGPTNGram': SelfCheckGPTNGram,
+    'SelfCheckGPTMQAG': SelfCheckGPTMQAG,
+    'SelfCheckGPTPrompt': SelfCheckGPTPrompt
+}
 
 DETECTORS = [
     ChainPoll, 
@@ -30,9 +56,13 @@ DETECTORS = [
     RefChecker,
     GEval,
     ChatProtect,
-    LLMUncertainty,
-    SNNE
 ]
+
+# Add SNNE and LLMUncertainty if they were successfully imported
+if SNNE is not None:
+    DETECTORS.append(SNNE)
+if LLMUncertainty is not None:
+    DETECTORS.append(LLMUncertainty)
 
 def get_detectors_display_names():
     return [{"id": detector.id, "display_name": detector.display_name} for detector in DETECTORS]

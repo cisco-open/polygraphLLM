@@ -8,6 +8,7 @@ In the context of LLMs, **hallucination** refers to the generation of text that 
 
 ## Table of Contents
 
+- [Quick Start](#quick-start)
 - [Getting Started](#getting-started)
     - [Installation](#installation)
     - [Usage](#usage)
@@ -22,20 +23,39 @@ In the context of LLMs, **hallucination** refers to the generation of text that 
 - [Contributing](#contributing)
 - [License](#license)
 
+## Quick Start
+
+**Make Commands:**
+```bash
+make help      # Show available commands
+make install   # Install package and dependencies
+make server    # Start backend server
+make frontend  # Start frontend development server
+make dev       # Start both backend and frontend
+make clean     # Clean build artifacts
+```
+
+**Quick Setup:**
+```bash
+make install
+export OPENAI_API_KEY=your_key_here
+export SERPER_API_KEY=your_key_here
+make dev
+```
+
 ## Getting Started
 
 ### Installation
 
-#### Use a conda environment and install the followings
+#### Using Make commands (recommended)
+    make install     # Install package and dependencies
 
-
+#### Manual installation
     pip install -e .
     pip install -r requirements.txt
     python3 -m spacy download en_core_web_sm
- 
 
 #### Export envs for openai and google wrapper
-
 
     export OPENAI_API_KEY=
     export SERPER_API_KEY=
@@ -45,6 +65,24 @@ In the context of LLMs, **hallucination** refers to the generation of text that 
 
 #### Playground
 
+**Using Make commands (recommended):**
+
+Start both backend and frontend:
+
+    make dev
+
+Or start them separately:
+
+    make server      # Start backend server
+    make frontend    # Start frontend (includes npm install)
+
+**Manual commands:**
+
+Start the backend server:
+
+    python3 server.py
+
+In a separate terminal, start the frontend:
 
     cd playground
     npm i
@@ -52,15 +90,42 @@ In the context of LLMs, **hallucination** refers to the generation of text that 
 
 Go to http://localhost:3000/ and use the app.
 
+The backend server provides the following API endpoints:
+- `/detect` - POST endpoint for hallucination detection
+- `/detectors` - GET endpoint to list available detectors  
+- `/benchmarks` - GET endpoint to list available benchmarks
+- `/settings` - GET/PUT endpoints for configuration management
+- `/ask-llm` - POST endpoint to query the LLM directly
+
 
 
 #### Library
 
-##### Instantiate the Base Detectors
+##### Instantiate the Base Detector
 
 
-    from src.detectors.base import Detector
+    from polygraphLLM.algorithms.base import Detector
     detector = Detector()
+
+##### Using Individual Detection Algorithms
+
+```python
+from polygraphLLM.algorithms import ChainPoll, RefChecker, SelfCheckGPTBertScore
+
+# Use specific detectors
+chainpoll_detector = ChainPoll()
+refchecker_detector = RefChecker()
+selfcheck_detector = SelfCheckGPTBertScore()
+
+# Get hallucination detection results with threshold
+question = "What is the capital of France?"
+answer = "The capital of France is Paris."
+
+is_hallucinated, score, answer, additional_data = chainpoll_detector.detect_hallucination(
+    question, answer, threshold=0.5
+)
+print(f"Is hallucinated: {is_hallucinated}, Score: {score}")
+```
 
 ##### Requesting results from the LLM
 
@@ -113,8 +178,23 @@ Go to http://localhost:3000/ and use the app.
     print(results)
 
 
-##### Check the hallucination scores using the triplets.
+##### Check for hallucinations using detection algorithms
 
+Using the threshold-based detection method:
+
+    from polygraphLLM.algorithms import RefChecker
+    
+    question = 'What factors can affect the presence or absence of the cholera toxin subunit A1 on the surface of Lactobacillus casei strains?'
+    
+    detector = RefChecker()
+    is_hallucinated, score, answer, additional_data = detector.detect_hallucination(
+        question, threshold=0.5
+    )
+    print(f"Is hallucinated: {is_hallucinated}")
+    print(f"Score: {score}")
+    print(f"Answer: {answer}")
+
+Using the triplet-based approach:
 
     question = 'What factors can affect the presence or absence of the cholera toxin subunit A1 on the surface of Lactobacillus casei strains?'
     answer = detector.ask_llm(question, n=1)[0]
@@ -252,33 +332,32 @@ The settings page allows users to configure parameters for various detection met
 ![Detection results](assets/detection_results.png)
 
 
-
 ## Building blocks
 
 This project implements generic approaches for hallucination detection.
 
-The ``Detector`` base class implements the building blocks to detect
+The `Detector` base class implements the building blocks to detect
 hallucinations and score them.
 
-``ask_llm`` - method to request N responses from an LLM via a prompt
+`ask_llm` - method to request N responses from an LLM via a prompt
 
-``extract_triplets`` - method to extract subject, predicate, object from
+`extract_triplets` - method to extract subject, predicate, object from
 a text.
 
-``extract_sentences`` - method to split a text into sentences using
+`extract_sentences` - method to split a text into sentences using
 spacy
 
-``generate_question`` - method to generate a question from a text
+`generate_question` - method to generate a question from a text
 
-``retrieve`` - method to retrieve information from google via the serper
+`retrieve` - method to retrieve information from google via the serper
 api
 
-``check`` - method to check if the claims contain hallucinations
+`check` - method to check if the claims contain hallucinations
 
-``similarity_bertscore`` - method to check the similarity between texts
+`similarity_bertscore` - method to check the similarity between texts
 via bertscore
 
-``similarity_ngram`` - method to check the similarity between texts via
+`similarity_ngram` - method to check the similarity between texts via
 ngram model
 
 You can implement any custom detector and combine all the available
@@ -287,20 +366,30 @@ methods from above.
 
 #### Creating a new detector
 
-In the detectors folder create a new file for your detector.
-Inherit the Detector Base class and implement the score method.
+In the `src/polygraphLLM/algorithms/` folder create a new file for your detector.
+Inherit the Detector Base class and implement both the `score` and `detect_hallucination` methods.
 
 
-    from src.detectors.base import Detector
+    from polygraphLLM.algorithms.base import Detector
+    
     class CustomDetector(Detector):
-
-        def score(self, question, answer=None, samples=None, summary=None):
-            # do your logic.
-            return score, answer, responses
+        id = 'custom_detector'
+        display_name = 'Custom Detector'
+        
+        def score(self, question, answer=None, samples=None, summary=None, settings=None):
+            # Implement your scoring logic
+            # Return score, answer, and additional data
+            return score, answer, additional_data
+            
+        def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+            # Implement threshold-based detection
+            score, answer, additional_data = self.score(question, answer, samples, summary, settings)
+            is_hallucinated = bool(score > threshold)  # Adjust logic based on your scoring
+            return is_hallucinated, score, answer, additional_data
 
 #### Creating a new LLM Handler
 
-In the llm folder create a new file with your handler.
+In the `src/polygraphLLM/utils/llm/` folder create a new file with your handler.
 See an example below.
 
 
@@ -316,26 +405,30 @@ See an example below.
             logger.info(f'Prompt responses: {results}')
             return results
 
-In **config.py** in **init_building_blocks** update the **llm_handler** to your new handler.
+In `src/polygraphLLM/utils/config.py` in the `init_building_blocks` function, update the `llm_handler` to your new handler.
 
 Instead of
 
-``llm_handler = OpenAIHandler()``
+`llm_handler = OpenAIHandler()`
 
 use
 
-``llm_handler = CustomHandler()``
+`llm_handler = CustomHandler()`
 
 
 #### Implementing a new Benchmark
 
-In the benchmarks folder add a new file with your benchmark.
+In the `src/polygraphLLM/utils/benchmarks/` folder add a new file with your benchmark.
 
-Inherit the **DatasetParser** class and implement the **display** function as in this example.
+Inherit the `DatasetParser` class and implement the `display` function as in this example.
 
-To use it with the UI you must add your newly implemented benchmark to the **BENCHMARKS** list in the **__init__.py** file of the same folder.
+To use it with the UI you must add your newly implemented benchmark to the `BENCHMARKS` list in the `__init__.py` file of the same folder.
 
 
+    from polygraphLLM.utils.benchmarks.DatasetParser import DatasetParser
+    from datasets import load_dataset
+    import uuid
+    
     class DatabricksDollyParser(DatasetParser):
         display_name = 'Databricks dolly'
         id = 'databricks-dolly'

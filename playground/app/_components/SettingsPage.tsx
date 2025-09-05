@@ -41,14 +41,15 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
   );
 
   useEffect(() => {
-    const localSettings = localStorage.getItem("settings");
+    const localSettings = localStorage.getItem("polygraphLLM_settings");
 
     if (localSettings) {
       setLocalSettings(JSON.parse(localSettings));
     } else {
-      localStorage.setItem("settings", JSON.stringify(settings));
+      localStorage.setItem("polygraphLLM_settings", JSON.stringify(settings));
       setLocalSettings(settings);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
   }, [activeSection, localSettings]);
 
   const handleResetClick = () => {
-    localStorage.setItem("settings", JSON.stringify(settings));
+    localStorage.setItem("polygraphLLM_settings", JSON.stringify(settings));
     setLocalSettings(settings);
   };
 
@@ -121,7 +122,10 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
         return setting;
       });
 
-      localStorage.setItem("settings", JSON.stringify(updatedSettings));
+      localStorage.setItem(
+        "polygraphLLM_settings",
+        JSON.stringify(updatedSettings)
+      );
       setLocalSettings(updatedSettings);
 
       toast.success("Settings updated successfully!");
@@ -147,7 +151,7 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
         <Flex direction="column" gap="6" width="50%" mb="8" mt="4">
           {activeSectionData?.map((item) => {
             return (
-              <Flex direction="column" gap="2">
+              <Flex direction="column" gap="2" key={item.key}>
                 <Flex align="center" gap="2">
                   <Tooltip content={item.description}>
                     <InfoCircledIcon />
@@ -168,8 +172,12 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
                       {item.values
                         ?.split(", ")
                         ?.map((item) => item.replace(/,/g, ""))
-                        ?.map((item) => {
-                          return <Select.Item value={item}>{item}</Select.Item>;
+                        ?.map((item, idx) => {
+                          return (
+                            <Select.Item value={item} key={idx}>
+                              {item}
+                            </Select.Item>
+                          );
                         })}
                     </Select.Content>
                   </Select.Root>
@@ -180,6 +188,17 @@ export const SettingsPage = ({ settings }: { settings: SettingsItem[] }) => {
                     placeholder={`${item.name}...`}
                     type={item.type}
                     onChange={(e) => handleInputChange(e, item.key)}
+                    step={
+                      item.type === "number" && item.key.includes("THRESHOLD")
+                        ? 0.1
+                        : undefined
+                    }
+                    min={0}
+                    max={
+                      item.type === "number" && item.key.includes("THRESHOLD")
+                        ? 1
+                        : undefined
+                    }
                     required
                   />
                 )}

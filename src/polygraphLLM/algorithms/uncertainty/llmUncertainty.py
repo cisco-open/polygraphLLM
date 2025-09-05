@@ -17,9 +17,9 @@
 import logging
 import re
 
-from .base import Detector
+from ..base import Detector
 
-from ..prompts.default import (
+from polygraphLLM.utils.prompts.default import (
     DEFAULT_LLM_UNCERTAINTY_VANILLA_PROMPT, 
     DEFAULT_LLM_UNCERTAINTY_COT_PROMPT, 
     DEFAULT_LLM_UNCERTAINTY_SELF_PROBING_PROMPT, 
@@ -65,3 +65,21 @@ class LLMUncertainty(Detector):
         confidence_fraction = f"{confidence_level}/100"
 
         return confidence_fraction, answer, response
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Lower confidence indicates hallucination.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        confidence_fraction, answer, response = self.score(question, answer, samples, summary, settings)
+        # Parse confidence as a number (e.g., "75/100" -> 0.75)
+        try:
+            confidence_score = float(confidence_fraction.split('/')[0]) / 100.0
+        except:
+            confidence_score = 0.5  # Default if parsing fails
+        
+        # Lower confidence indicates higher chance of hallucination
+        is_hallucinated = bool(confidence_score < threshold)
+        return is_hallucinated, confidence_score, answer, response

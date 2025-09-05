@@ -21,7 +21,7 @@ import re
 
 from .base import Detector
 
-from ..prompts.default import DEFAULT_COH_PROMPT, DEFAULT_FLU_PROMPT, DEFAUL_REL_PROMPT, DEFAULT_CON_PROMPT
+from ..utils.prompts.default import DEFAULT_COH_PROMPT, DEFAULT_FLU_PROMPT, DEFAUL_REL_PROMPT, DEFAULT_CON_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class GEval(Detector):
     def parse_output(output):
         if ':' in output:
             output = output.rsplit(':', 1)[-1]
-        matched = re.search("^ ?([\d\.]+)", output)
+        matched = re.search(r"^ ?([\d\.]+)", output)
         if matched:
             try:
                 score = float(matched.group(1))
@@ -44,7 +44,7 @@ class GEval(Detector):
         else:
             if ':' in output:
                 output = output.rsplit(':', 1)[-1]
-                matched = re.search("^ ?([\d\.]+)", output)
+                matched = re.search(r"^ ?([\d\.]+)", output)
                 if matched:
                     try:
                         score = float(matched.group(1))
@@ -95,3 +95,16 @@ class GEval(Detector):
             scores[metric.title()] = float("{:.2f}".format(self.normalize_score(score)))
         scores['Total'] = float("{:.2f}".format(sum([v for k, v in scores.items()])/len(scores)))
         return scores, answer, samples
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Lower total score indicates hallucination.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        scores, answer, samples = self.score(question, answer, samples, summary, settings)
+        total_score = scores.get('Total', 0.0)
+        # Lower quality score indicates higher chance of hallucination
+        is_hallucinated = bool(total_score < threshold)
+        return is_hallucinated, total_score, answer, scores

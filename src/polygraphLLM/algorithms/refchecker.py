@@ -65,3 +65,16 @@ class RefChecker(Detector):
             agg[key] /= total
         print(results)
         return agg
+    
+    def detect_hallucination(self, question=None, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Higher contradiction ratio indicates hallucination.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        agg_results, answer, additional_data = self.score(question, answer, samples, summary, settings)
+        # Use contradiction ratio as hallucination score
+        hallucination_score = agg_results.get("Entailment", 0.0)
+        is_hallucinated = bool(hallucination_score < threshold)
+        return is_hallucinated, hallucination_score, answer, agg_results

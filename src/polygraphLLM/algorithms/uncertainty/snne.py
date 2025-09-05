@@ -22,7 +22,7 @@ from sentence_transformers import SentenceTransformer
 
 from ..base import Detector
 
-from .uncertainty.uncertainty_measures.semantic_entropy import EntailmentDeberta, soft_nearest_neighbor_loss
+from .semantic_entropy import EntailmentDeberta, soft_nearest_neighbor_loss
 
 logger = logging.getLogger(__name__)
 
@@ -307,3 +307,15 @@ class SNNE(Detector):
             })
         
         return results
+    
+    def detect_hallucination(self, question, answer=None, samples=None, summary=None, settings=None, threshold=0.5):
+        """
+        Detect hallucination based on threshold. Higher SNNE score indicates hallucination.
+        
+        Returns:
+            tuple: (is_hallucinated: bool, raw_score: float, answer: str, additional_data)
+        """
+        snne_score, answer, samples = self.score(question, answer, samples, summary, settings)
+        # Higher SNNE score indicates higher chance of hallucination
+        is_hallucinated = bool(snne_score > threshold)
+        return is_hallucinated, snne_score, answer, samples
