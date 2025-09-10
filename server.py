@@ -128,12 +128,20 @@ def detect_hallucination_route():
                     else:
                         return {'error': f'Invalid detection method provided: {method}'}
 
+                # Sort results to ensure SNNE appears first
+                sorted_results = {}
+                if 'snne' in hallucination_results:
+                    sorted_results['snne'] = hallucination_results['snne']
+                for method, result in hallucination_results.items():
+                    if method != 'snne':
+                        sorted_results[method] = result
+
                 return {
                     'id': id,
                     'question': question,
                     'answer': answer,
                     'context': context,
-                    'result': hallucination_results
+                    'result': sorted_results
                 }
             except Exception as e:
                 logging.error(f'Error processing QA: {e}')

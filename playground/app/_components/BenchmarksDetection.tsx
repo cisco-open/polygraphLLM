@@ -114,7 +114,10 @@ export const BenchmarksDetection = ({
     mutationFn: detectHallucinations,
     onSuccess: (data) => {
       setResult(data);
-      setSelectedResult(Object.keys(data[0].result)[0] as string);
+      const methods = Object.keys(data[0].result);
+      // Set SNNE as default if available, otherwise use first method
+      const defaultMethod = methods.includes("snne") ? "snne" : methods[0];
+      setSelectedResult(defaultMethod as string);
     },
   });
 
