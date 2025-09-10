@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 class SNNE(Detector):
     id = 'snne'
-    display_name = 'SNNE (Soft Nearest Neighbor Entropy)'
+    display_name = 'SNNE (Semantic Nearest Neighbor Entropy)'
 
     def __init__(self):
         super().__init__()
