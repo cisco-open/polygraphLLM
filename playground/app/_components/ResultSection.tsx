@@ -1,3 +1,4 @@
+"use client";
 /*
  * Copyright 2024 Cisco Systems, Inc. and its affiliates
  *
@@ -65,17 +66,23 @@ export const ResultSection = ({
         defaultValue={selectedResult}
         onValueChange={(method) => setSelectedResult(method)}
       >
-        {Object.keys(result[0].result).map((method) => {
-          const methodData = detectors.find((item) => item.id === method);
-          return (
-            <SegmentedControl.Item
-              key={methodData?.id}
-              value={methodData?.id ?? ""}
-            >
-              {methodData?.display_name}
-            </SegmentedControl.Item>
-          );
-        })}
+        {Object.keys(result[0].result)
+          .sort((a, b) => {
+            if (a === "snne") return -1;
+            if (b === "snne") return 1;
+            return a.localeCompare(b);
+          })
+          .map((method) => {
+            const methodData = detectors.find((item) => item.id === method);
+            return (
+              <SegmentedControl.Item
+                key={methodData?.id}
+                value={methodData?.id ?? ""}
+              >
+                {methodData?.display_name}
+              </SegmentedControl.Item>
+            );
+          })}
       </SegmentedControl.Root>
       {selectedResult && (
         <Callout.Root>

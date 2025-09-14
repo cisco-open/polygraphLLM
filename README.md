@@ -110,9 +110,11 @@ The backend server provides the following API endpoints:
 ##### Using Individual Detection Algorithms
 
 ```python
+from polygraphLLM.algorithms.uncertainty import SNNE
 from polygraphLLM.algorithms import ChainPoll, RefChecker, SelfCheckGPTBertScore
 
 # Use specific detectors
+snne_detector = SNNE()
 chainpoll_detector = ChainPoll()
 refchecker_detector = RefChecker()
 selfcheck_detector = SelfCheckGPTBertScore()
@@ -121,7 +123,7 @@ selfcheck_detector = SelfCheckGPTBertScore()
 question = "What is the capital of France?"
 answer = "The capital of France is Paris."
 
-is_hallucinated, score, answer, additional_data = chainpoll_detector.detect_hallucination(
+is_hallucinated, score = snne_detector.detect_hallucination(
     question, answer, threshold=0.5
 )
 print(f"Is hallucinated: {is_hallucinated}, Score: {score}")

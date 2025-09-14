@@ -60,7 +60,7 @@ DETECTORS = [
 
 # Add SNNE and LLMUncertainty if they were successfully imported
 if SNNE is not None:
-    DETECTORS.append(SNNE)
+    DETECTORS.insert(0, SNNE)
 if LLMUncertainty is not None:
     DETECTORS.append(LLMUncertainty)
 
